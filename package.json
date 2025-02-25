@@ -20,5 +20,13 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2110503-2564/project-blackened.git"
+  },
+  "bugs": {
+    "url": "https://github.com/2110503-2564/project-blackened/issues"
+  },
+  "homepage": "https://github.com/2110503-2564/project-blackened#readme"
 }

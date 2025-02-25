@@ -29,7 +29,7 @@ const getCoWorkingSpaces = async (req,res,next) => {
     const limit = parseInt(req.query.limit,10) || 25;
     const startIndex = (page-1)*limit
     const endIndex = (page)*limit
-    const total = await Hospital.countDocuments()
+    const total = await CoWorkingSpace.countDocuments()
     
     query = query.skip(startIndex).limit(limit)
     
@@ -70,10 +70,70 @@ const getCoWorkingSpace = async (req,res,next) => {
       data: coworkingspace
     })
   } catch (err) {
-    next(err)
+    next(err);
   }
 }
 
 
+const addCoWorkingSpace = async (req,res,next) => {
+  try {
+      const coworkingspace = await CoWorkingSpace.create(req.body);
+      return res.status(201).json({
+        success: true,
+        data: coworkingspace
+      });
+  } catch (error) {
+    next(error);
+  }
+}
 
-module.exports = { getCoWorkingSpaces, getCoWorkingSpace }
+
+const updateCoworkingSpace = async (req,res,next) => {
+  try {
+   // console.log("use update /////////// \n");
+    const coworkingspace = await CoWorkingSpace.findByIdAndUpdate(req.params.id , req.body , {
+      new : true,
+      runValidators : true
+    });
+
+    if(!coworkingspace){
+      return res.status(400).json({
+        success : false,
+        msg : `not found ${req.params.id}`
+      });
+    }
+
+    return res.status(200).json({
+      success : true,
+      data : coworkingspace
+    })
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+const deleteCoWorkingSpace = async (req,res,next) => {
+  try {
+    const coworkingspace = await CoWorkingSpace.findById(req.params.id);
+
+    if(!coworkingspace){
+      return res.status(400).json({
+        success : false,
+        msg :  `not found ${req.params.id}`
+      })
+    }
+
+    await CoWorkingSpace.deleteOne({_id : req.params.id});
+
+    res.status(200).json({
+      success : true
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+module.exports = { getCoWorkingSpaces, getCoWorkingSpace , addCoWorkingSpace , updateCoworkingSpace , deleteCoWorkingSpace};

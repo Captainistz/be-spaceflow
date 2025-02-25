@@ -67,7 +67,7 @@ CoWorkingSpaceSchema.virtual('reservations', {
   ref: 'Reservation',
   localField: '_id',
   foreignField: 'coWorkingSpace',
-  justOne: false
+  justOne: true
 })
 
 module.exports = mongoose.model('CoWorkingSpace', CoWorkingSpaceSchema)

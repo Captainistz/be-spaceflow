@@ -18,7 +18,7 @@ app.use(cookirParser())
 
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'))
-app.use('/api/v1/coworkingspace', require('./routes/coWorkingSpace'))
+app.use('/api/v1/coworkingspace', require('./routes/coworkingspace'))
 
 // Root endpoint
 app.get('/', (_, res) => {

@@ -10,7 +10,8 @@ const RoomSchema = new mongoose.Schema({
     required: [true, 'Please add a capacity']
   },
   facilities: {
-    type: [String]
+    type: [String],
+    default: []
   }
 
 })
@@ -38,7 +39,8 @@ const CoWorkingSpaceSchema = new mongoose.Schema({
     match: [/^\d{5}$/, 'Postalcode can not be more than 5 digits']
   },
   tel: {
-    type: String
+    type: String,
+    require: [true, 'Please add a telephone number']
   },
   opentime: {
     type: String,
@@ -60,6 +62,13 @@ const CoWorkingSpaceSchema = new mongoose.Schema({
       message: "The list must include at least 1 room"
     }
   }
+})
+
+CoWorkingSpaceSchema.virtual('reservations', {
+  ref: 'Reservations',
+  localField: '_id',
+  foreignField: 'coWorkingSpace',
+  justOne: true
 })
 
 module.exports = mongoose.model('CoWorkingSpace', CoWorkingSpaceSchema)

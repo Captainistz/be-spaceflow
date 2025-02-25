@@ -29,7 +29,7 @@ const getCoWorkingSpaces = async (req,res,next) => {
     const limit = parseInt(req.query.limit,10) || 25;
     const startIndex = (page-1)*limit
     const endIndex = (page)*limit
-    const total = await Hospital.countDocuments()
+    const total = await CoWorkingSpace.countDocuments()
     
     query = query.skip(startIndex).limit(limit)
     
@@ -65,6 +65,71 @@ const getCoWorkingSpace = async (req,res,next) => {
   try {
     const {id} = req.params
     const coworkingspace = await CoWorkingSpace.findById(id)
+    if (!coworkingspace) {
+      return res.status(404).json({
+        success: false,
+        message: `No coworkingspace with id ${id}`
+      })
+    }
+    res.status(200).json({
+      success: true,
+      data: coworkingspace
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const addCoWorkingSpace = async (req,res,next) => {
+  try {
+    const coworkingspace = await CoWorkingSpace.create(req.body)
+    res.status(200).json({
+      success: true,
+      data: coworkingspace
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const updateCoWorkingSpace = async (req,res,next) => {
+  try {
+    const {id} = req.params
+    const {body} = req
+    const coworkingspace = await CoWorkingSpace.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true
+    })
+    if (!coworkingspace) {
+      return res.status(404).json({
+        success: false,
+        message: `No coworkingspace with id ${id}`
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      data: coworkingspace
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+const deleteCoWorkingSpace = async (req,res,next) => {
+  try {
+    const {id} = req.params
+    const coworkingspace = await CoWorkingSpace.findById(id) // trigger catch should this CoWorkingSpace doesn't exists
+    if (!coworkingspace) {
+      return res.status(404).json({
+        success: false,
+        message: `No coworkingspace with id ${id}`
+      })
+    }
+
+    await Reservation.deleteMany({coworkingspace: id})
+    await CoWorkingSpace.findByIdAndDelete(id)
+
     res.status(200).json({
       success: true,
       data: coworkingspace
@@ -76,4 +141,4 @@ const getCoWorkingSpace = async (req,res,next) => {
 
 
 
-module.exports = { getCoWorkingSpaces, getCoWorkingSpace }
+module.exports = { getCoWorkingSpaces, getCoWorkingSpace, addCoWorkingSpace, updateCoWorkingSpace, deleteCoWorkingSpace }

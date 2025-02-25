@@ -13,7 +13,6 @@ const RoomSchema = new mongoose.Schema({
     type: [String],
     default: []
   }
-
 })
 
 const CoWorkingSpaceSchema = new mongoose.Schema({
@@ -65,7 +64,7 @@ const CoWorkingSpaceSchema = new mongoose.Schema({
 })
 
 CoWorkingSpaceSchema.virtual('reservations', {
-  ref: 'Reservations',
+  ref: 'Reservation',
   localField: '_id',
   foreignField: 'coWorkingSpace',
   justOne: true

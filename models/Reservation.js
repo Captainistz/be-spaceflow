@@ -16,6 +16,7 @@ const ReservationSchema = mongoose.Schema({
   },
   coWorkingSpace: {
     type: mongoose.Schema.ObjectId,
+    ref: 'CoWorkingSpace',
     require: true
   },
   createdAt: {

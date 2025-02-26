@@ -4,7 +4,7 @@ const { getRooms, getRoom , createRoom , deleteRoom, updateRoom} = require('../c
 
 const router = express.Router({ mergeParams: true })
 
-router.route('/').get(getRooms).post(createRoom);
-router.route('/:room_id').get(getRoom).delete(deleteRoom).put(updateRoom);
+router.route('/').get(getRooms).post(protect, authorize('admin'),createRoom);
+router.route('/:room_id').get(getRoom).delete(protect, authorize('admin'),deleteRoom).put(protect, authorize('admin'),updateRoom);
 
 module.exports = router

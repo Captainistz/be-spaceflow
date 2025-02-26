@@ -1,5 +1,5 @@
 const CoWorkingSpace = require('../models/CoWorkingSpace')
-
+const Reservation = require('../models/Reservation')
 
 const getRooms = async (req, res, next) => {
   try {
@@ -68,13 +68,19 @@ const createRoom = async (req,res,next) => {
 
 const deleteRoom = async (req,res,next) => {
   try {
-    const coworkingspace = await CoWorkingSpace.find({
+    const coworkingspace = await CoWorkingSpace.findOne({
       _id: req.params.CoWorkingSpaceID,
       'rooms._id': (req.params.room_id),
     })
 
     if(!coworkingspace){
       res.status(400).json({success : false , msg : `not found ${req.params.room_id}`});
+    }
+
+
+    const roomToDelete = coworkingspace.rooms.find(room => room._id.toString() === req.params.room_id);
+    if (!roomToDelete) {
+      return res.status(404).json({ success: false, msg: "Room not found" });
     }
 
 
@@ -87,7 +93,13 @@ const deleteRoom = async (req,res,next) => {
         }
       },{ safe: true });
 
-      res.status(200).json({success : true});
+    //cascade delete when deleted room
+    await Reservation.deleteMany({
+      coWorkingSpace: req.params.CoWorkingSpaceID,
+      roomNumber: roomToDelete.roomNumber // Ensure you're deleting the correct reservations
+    });
+
+    res.status(200).json({success : true});
   } catch (error) {
     next(error);
   }
@@ -110,13 +122,13 @@ const updateRoom = async (req,res,next) => {
        rooms : {$elemMatch : {_id : req.params.room_id} }}  ,
       {
         $set : {
-          'rooms.$.roomNumber' : req.body.roomNumber,
           'rooms.$.capacity' : req.body.capacity,
           'rooms.$.facilities' : req.body.facilities
         }
       }
     );
 
+// 'rooms.$.roomNumber' : req.body.roomNumber,
 
     res.status(200).json({success : true});
   } catch (error) {

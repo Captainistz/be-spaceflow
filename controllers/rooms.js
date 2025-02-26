@@ -41,11 +41,24 @@ const createRoom = async (req,res,next) => {
       res.status(400).json({success : false , mag : `not found ${req.params.CoWorkingSpaceID}`});
     }
 
-    await CoWorkingSpace.updateOne({_id : req.params.CoWorkingSpaceID} , {$push : {rooms : room}});
-    coworkingspace = await CoWorkingSpace.findById(req.params.CoWorkingSpaceID);
+    const existedRoom = await CoWorkingSpace.find({_id: req.params.CoWorkingSpaceID,
+      'rooms.roomNumber' : room.roomNumber});
+    
+
+    //console.log(existedRoom);  
+    if(existedRoom.length === 0){
+        await CoWorkingSpace.updateOne({_id : req.params.CoWorkingSpaceID} , {$push : {rooms : room}});
+        coworkingspace = await CoWorkingSpace.findById(req.params.CoWorkingSpaceID);
+        res.status(201).json({success : true , data : coworkingspace});
+    }
+    else{
+      res.status(400).json({success : false , msg : `This room number has already created`});
+    }  
+
+
    // console.log(coworkingspace);
     
-    res.status(201).json({success : true , data : coworkingspace});
+    //res.status(201).json({success : true , data : coworkingspace});
 
   } catch (error) {
     next(error);

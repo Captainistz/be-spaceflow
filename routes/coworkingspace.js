@@ -4,8 +4,12 @@ const { getCoWorkingSpaces, getCoWorkingSpace , addCoWorkingSpace , updateCowork
 
 const router = express.Router()
 
+const rvsRoute = require('./reservation');
+
+router.use('/:CoWorkingSpaceId/reservations/' , rvsRoute);
+
 router.route('/')
-  .get(getCoWorkingSpaces).post(protect,authorize('admin'),addCoWorkingSpace)
+  .get(getCoWorkingSpaces).post(protect,authorize('admin'),addCoWorkingSpace);
 
 router.route('/:id')
   .get(getCoWorkingSpace)

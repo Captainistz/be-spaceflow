@@ -125,6 +125,7 @@ const deleteCoWorkingSpace = async (req,res,next) => {
       })
     }
 
+    await Reservation.deleteMany({coWorkingSpace : req.params.id});
     await CoWorkingSpace.deleteOne({_id : req.params.id});
 
     res.status(200).json({

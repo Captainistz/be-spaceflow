@@ -12,8 +12,7 @@ const ReservationSchema = mongoose.Schema({
   },
   roomNumber: {
     type: Number,
-    require: true,
-    unique: true
+    require: true
   },
   coWorkingSpace: {
     type: mongoose.Schema.ObjectId,

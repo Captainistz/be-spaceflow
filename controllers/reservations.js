@@ -3,7 +3,7 @@ const CoWorkingSpace = require('../models/CoWorkingSpace');
 
 const getReservations  = async (req,res,next) => {
     let query;
-    console.log(req.user);
+    //console.log(req.user);
     if(req.user.role !== 'admin'){
         query = Reservation.find({user : req.user.id}).populate({
             path : 'coWorkingSpace',
@@ -67,7 +67,7 @@ const getReservation = async (req,res,next) => {
 
 const addReservation = async (req,res,next) => {
     try {
-        console.log(req.params.CoWorkingSpaceId);
+        //console.log(req.params.CoWorkingSpaceId);
         req.body.coWorkingSpace = req.params.CoWorkingSpaceId;
 
         const coworkingspace = await CoWorkingSpace.findById(req.params.CoWorkingSpaceId);
@@ -78,9 +78,9 @@ const addReservation = async (req,res,next) => {
 
         //console.log(req.user);
         req.body.user = req.user.id;
-        const exitedCoWorkingSpace = await CoWorkingSpace.find({user : req.user.id});
+        const exitedReservation = await Reservation.find({user : req.user.id});
 
-        if(exitedCoWorkingSpace.length >= 3 && req.role !== 'admin'){
+        if(exitedReservation.length >= 3 && req.role !== 'admin'){
             return res.status(400).json({success:false,message:`The user with ID ${req.user.id} has already made 3 reservations`});
         }
 

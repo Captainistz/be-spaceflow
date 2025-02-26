@@ -71,16 +71,22 @@ const addReservation = async (req,res,next) => {
         req.body.coWorkingSpace = req.params.CoWorkingSpaceId;
 
         const coworkingspace = await CoWorkingSpace.findById(req.params.CoWorkingSpaceId);
+        const roomExists = coworkingspace.rooms.find(room => room.roomNumber === req.body.roomNumber);
+
 
         if (!coworkingspace){
             return res.status(404).json({success:false , message : `No coworkingspace with the id of ${req.params.CoWorkingSpaceId}`});
+        }
+
+        if (!roomExists){
+            return res.status(404).json({success : false , message : 'No room'});
         }
 
         //console.log(req.user);
         req.body.user = req.user.id;
         const exitedReservation = await Reservation.find({user : req.user.id});
 
-        if(exitedReservation.length >= 3 && req.role !== 'admin'){
+        if(exitedReservation.length >= 3 && req.user.role !== 'admin'){
             return res.status(400).json({success:false,message:`The user with ID ${req.user.id} has already made 3 reservations`});
         }
 
@@ -100,7 +106,12 @@ const addReservation = async (req,res,next) => {
 // need to fix later... room
 const updateReservation = async(req,res,next) => {
     try {
+
+        const coworkingspace = await CoWorkingSpace.findById(req.body.coWorkingSpace);
+        const roomExists = coworkingspace.rooms.find(room => room.roomNumber === req.body.roomNumber);
+        
         let reservation = await Reservation.findById(req.params.id);
+
 
         if(!reservation){
             return res.status(404).json({
@@ -111,6 +122,10 @@ const updateReservation = async(req,res,next) => {
 
         if(reservation.user.toString() !== req.user.id && req.user.role !== admin){
             return res.status(401).json({success:false , msg : `User ${req.user.id} is not authorized to update this reservation`})
+        }
+
+        if(!roomExists){
+            return res.status(404).json({success : false , message : 'No room'});
         }
 
         reservation = await Reservation.findByIdAndUpdate(req.params.id,req.body ,{

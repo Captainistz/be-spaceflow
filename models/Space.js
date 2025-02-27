@@ -94,4 +94,11 @@ SpaceSchema.methods.getRoom = async function (room_id) {
   return foundRoom
 }
 
+SpaceSchema.virtual('reservations', {
+  ref: 'Reservation',
+  localField: '_id',
+  foreignField: 'space',
+  justOne: false,
+})
+
 module.exports = mongoose.model('Space', SpaceSchema)

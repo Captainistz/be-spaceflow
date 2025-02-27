@@ -3,9 +3,16 @@ const { JsonWebTokenError } = require('jsonwebtoken')
 const globalErrorHandler = (err, req, res, next) => {
   // TODO : Implement better error handler + prodHandler
 
-  if (err instanceof JsonWebTokenError) {
+  if (err instanceof JsonWebTokenError || err.message == 'Unauthorized') {
     err.statusCode = 401
     err.message = 'Unauthorized'
+  }
+
+  if (err.name === 'ValidationError') {
+    err.statusCode = 400
+    err.message = Object.values(err.errors)
+      .map((val) => val.message)
+      .join(', ')
   }
 
   if (err.code === 11000) {

@@ -71,6 +71,25 @@ const login = async (req, res, next) => {
   }
 }
 
+// @desc   Logout user
+// @route  GET /api/v1/auth/logout
+// @access Public
+const logout = async (_, res, next) => {
+  try {
+    res.cookie('token', 'none', {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    })
+
+    res.status(200).json({ success: true, data: {} })
+  } catch (e) {
+    next(e)
+  }
+}
+
+// @desc   Get self
+// @route  POST /api/v1/auth/me
+// @access Public
 const me = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id)
@@ -80,4 +99,4 @@ const me = async (req, res, next) => {
   }
 }
 
-module.exports = { register, login, me }
+module.exports = { register, login, logout, me }

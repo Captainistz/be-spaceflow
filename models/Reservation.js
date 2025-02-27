@@ -1,28 +1,29 @@
 const mongoose = require('mongoose')
 
-const ReservationSchema = mongoose.Schema({
-  rsvDate: {
+const ReservationSchema = new mongoose.Schema({
+  reservationDate: {
     type: Date,
-    require: true
+    required: true,
   },
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
-    require: true
+    required: true,
   },
-  roomNumber: {
-    type: Number,
-    require: true
-  },
-  coWorkingSpace: {
+  room: {
     type: mongoose.Schema.ObjectId,
-    ref: 'CoWorkingSpace',
-    require: true
+    ref: 'Room',
+    required: true,
+  },
+  space: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Space',
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 })
 
 module.exports = mongoose.model('Reservation', ReservationSchema)

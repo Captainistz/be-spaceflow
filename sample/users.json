@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Neo Anderson",
+    "email": "n.anderson@spaceflow.me",
+    "phone": "0912348574",
+    "role": "admin",
+    "password": "12345678"
+  },
+  {
+    "name": "Morpheus",
+    "email": "morpheus@spaceflow.me",
+    "phone": "0956253354",
+    "role": "user",
+    "password": "12345678"
+  },
+  {
+    "name": "Agent Smith",
+    "email": "a.smith@spaceflow.me",
+    "phone": "0882927742",
+    "role": "user",
+    "password": "12345678"
+  }
+]

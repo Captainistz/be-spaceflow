@@ -1,24 +1,24 @@
 const mongoose = require('mongoose')
 
-const ReservationSchema = mongoose.Schema({
+const ReservationSchema = new mongoose.Schema({
   reservationDate: {
     type: Date,
-    require: true,
+    required: true,
   },
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
-    require: true,
+    required: true,
   },
   room: {
     type: mongoose.Schema.ObjectId,
     ref: 'Room',
-    require: true,
+    required: true,
   },
   space: {
     type: mongoose.Schema.ObjectId,
     ref: 'Space',
-    require: true,
+    required: true,
   },
   createdAt: {
     type: Date,

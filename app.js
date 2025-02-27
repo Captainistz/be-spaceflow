@@ -6,9 +6,11 @@ const connectDB = require('./config/db')
 const globalErrorHandler = require('./middleware/errorHandler')
 
 // Load environment
-dotenv.config({ path: './config/config.env' })
-
-connectDB()
+var configPath = './config/config.env'
+if (process.env.NODE_ENV === 'test') {
+  configPath = './config/config.test.env'
+}
+dotenv.config({ path: configPath })
 
 const app = express()
 
@@ -28,16 +30,14 @@ app.get('/', (_, res) => {
 
 app.use(globalErrorHandler)
 
-const PORT = process.env.PORT || 5000
+if (process.env.NODE_ENV !== 'test') {
+  connectDB()
 
-const server = app.listen(PORT, () => {
-  console.log(`  🚀 Server is running at http://127.0.0.1:${PORT}`)
-  console.log(`  📦 Using ${process.env.NODE_ENV} environment`)
-})
-
-process.on('unhandledRejection', (e, _) => {
-  console.error(e)
-  server.close(() => {
-    process.exit(1)
+  const PORT = process.env.PORT || 5000
+  app.listen(PORT, () => {
+    console.log(`  🚀 Server is running at http://127.0.0.1:${PORT}`)
+    console.log(`  📦 Using ${process.env.NODE_ENV} environment`)
   })
-})
+}
+
+module.exports = app

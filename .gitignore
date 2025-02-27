@@ -35,4 +35,5 @@ logs
 # Optional eslint cache
 .eslintcache
 
-config/config.env
+config/config.*
+!config/*.example

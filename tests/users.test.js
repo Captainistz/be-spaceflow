@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const request = require('supertest')
 const app = require('../app')
 const User = require('../models/User')
+const { connectDB, disconnectDB } = require('./memory-server')
 
 const testUser = {
   name: 'Test User',
@@ -25,13 +26,12 @@ let userId
 describe('User Authentication Tests', () => {
   // Connect to test database before all tests
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URI)
-    await User.deleteMany({})
+    await connectDB()
   })
 
   // Cleanup after all tests
   afterAll(async () => {
-    await mongoose.connection.close()
+    await disconnectDB()
   })
 
   // Clear user collection before each test group

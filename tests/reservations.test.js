@@ -4,6 +4,7 @@ const app = require('../app')
 const Space = require('../models/Space')
 const User = require('../models/User')
 const Reservation = require('../models/Reservation')
+const { connectDB, disconnectDB } = require('./memory-server')
 
 let adminToken
 let userToken
@@ -64,7 +65,7 @@ const testReservation = {
 
 describe('Reservations endpoint tests', () => {
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URI)
+    await connectDB()
     await Space.deleteMany({})
     await User.deleteMany({})
     await Reservation.deleteMany({})
@@ -83,7 +84,7 @@ describe('Reservations endpoint tests', () => {
   })
 
   afterAll(async () => {
-    await mongoose.connection.close()
+    await disconnectDB()
   })
 
   beforeEach(async () => {

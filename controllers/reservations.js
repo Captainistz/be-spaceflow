@@ -129,8 +129,8 @@ const updateReservation = async (req, res, next) => {
       throw new Error('Reservation not found')
     }
 
-    if (!space_id) space_id = prevReservation.space
-    if (!room_id) room_id = prevReservation.room
+    if (!req.body.space) space_id = prevReservation.space.toString()
+    if (!req.body.room) room_id = prevReservation.room.toString()
 
     if (
       prevReservation.user.toString() !== req.user.id &&

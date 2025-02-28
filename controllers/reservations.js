@@ -64,7 +64,7 @@ const getReservation = async (req, res, next) => {
 // @access Public
 const addReservation = async (req, res, next) => {
   const { space_id } = req.params
-  const { room } = req.body
+  const { room , reservationDate } = req.body
   const MAXIMUM_RESERVATIONS = process.env.MAXIMUM_RESERVATIONS
 
   req.body.space = space_id
@@ -89,6 +89,29 @@ const addReservation = async (req, res, next) => {
       req.user.role !== 'admin'
     ) {
       throw new Error('Maximum exceeded')
+    }
+
+    const { opentime, closetime } = space
+    const openTimeDate = new Date(reservationDate)
+    const closeTimeDate = new Date(reservationDate)
+    const thisRsvDate = new Date(reservationDate) 
+    openTimeDate.setUTCHours(
+      parseInt(opentime.substring(0,2)),
+      parseInt(opentime.substring(2,4))
+    )
+    closeTimeDate.setUTCHours(
+      parseInt(closetime.substring(0,2)),
+      parseInt(closetime.substring(2,4))
+    )
+    thisRsvDate.setUTCHours(
+      thisRsvDate.getUTCHours(),
+      thisRsvDate.getUTCMinutes()
+    )
+    if (thisRsvDate < openTimeDate) {
+      throw new Error('Before open time')
+    }
+    if (thisRsvDate >= closeTimeDate) {
+      throw new Error('After close time')
     }
 
     const reservation = await Reservation.create(req.body)
@@ -122,6 +145,7 @@ const updateReservation = async (req, res, next) => {
   const { id } = req.params
   let space_id = req.body.space
   let room_id = req.body.room
+  let reservationDate = req.body.reservationDate
 
   try {
     const prevReservation = await Reservation.findById(id)
@@ -131,6 +155,7 @@ const updateReservation = async (req, res, next) => {
 
     if (!req.body.space) space_id = prevReservation.space.toString()
     if (!req.body.room) room_id = prevReservation.room.toString()
+    if (!req.body.reservationDate) reservationDate = prevReservation.reservationDate
 
     if (
       prevReservation.user.toString() !== req.user.id &&
@@ -142,6 +167,29 @@ const updateReservation = async (req, res, next) => {
     const space = await Space.findById(space_id)
     if (!space) {
       throw new Error('Space not found')
+    }
+
+    const { opentime, closetime } = space
+    const openTimeDate = new Date(reservationDate)
+    const closeTimeDate = new Date(reservationDate)
+    const thisRsvDate = new Date(reservationDate)
+    openTimeDate.setUTCHours(
+      parseInt(opentime.substring(0,2)),
+      parseInt(opentime.substring(2,4))
+    )
+    closeTimeDate.setUTCHours(
+      parseInt(closetime.substring(0,2)),
+      parseInt(closetime.substring(2,4))
+    )
+    thisRsvDate.setUTCHours(
+      thisRsvDate.getUTCHours(),
+      thisRsvDate.getUTCMinutes()
+    )
+    if (thisRsvDate < openTimeDate) {
+      throw new Error('Before open time')
+    }
+    if (thisRsvDate >= closeTimeDate) {
+      throw new Error('After close time')
     }
 
     const roomExists = await space.getRoom(room_id)

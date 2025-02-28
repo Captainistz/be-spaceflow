@@ -48,15 +48,11 @@ describe('Spaces endpoint tests', () => {
     await User.deleteMany({})
 
     // Create test users and get tokens
-    const adminRes = await request(app)
-      .post('/api/v1/auth/register')
-      .send(testAdmin)
-    adminToken = adminRes.body.token
+    const admin = await User.create(testAdmin)
+    adminToken = await admin.getSignedJwtToken()
 
-    const userRes = await request(app)
-      .post('/api/v1/auth/register')
-      .send(testUser)
-    userToken = userRes.body.token
+    const user = await User.create(testUser)
+    userToken = await user.getSignedJwtToken()
   })
 
   // Cleanup after all tests

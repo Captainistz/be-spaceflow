@@ -64,7 +64,7 @@ const getReservation = async (req, res, next) => {
 // @access Public
 const addReservation = async (req, res, next) => {
   const { space_id } = req.params
-  const { room , reservationDate } = req.body
+  const { room, reservationDate } = req.body
   const MAXIMUM_RESERVATIONS = process.env.MAXIMUM_RESERVATIONS
 
   req.body.space = space_id
@@ -94,24 +94,18 @@ const addReservation = async (req, res, next) => {
     const { opentime, closetime } = space
     const openTimeDate = new Date(reservationDate)
     const closeTimeDate = new Date(reservationDate)
-    const thisRsvDate = new Date(reservationDate) 
-    openTimeDate.setUTCHours(
-      parseInt(opentime.substring(0,2)),
-      parseInt(opentime.substring(2,4))
+    const thisRsvDate = new Date(reservationDate)
+    openTimeDate.setHours(
+      parseInt(opentime.substring(0, 2)),
+      parseInt(opentime.substring(2, 4))
     )
-    closeTimeDate.setUTCHours(
-      parseInt(closetime.substring(0,2)),
-      parseInt(closetime.substring(2,4))
+    closeTimeDate.setHours(
+      parseInt(closetime.substring(0, 2)),
+      parseInt(closetime.substring(2, 4))
     )
-    thisRsvDate.setUTCHours(
-      thisRsvDate.getUTCHours(),
-      thisRsvDate.getUTCMinutes()
-    )
-    if (thisRsvDate < openTimeDate) {
-      throw new Error('Before open time')
-    }
-    if (thisRsvDate >= closeTimeDate) {
-      throw new Error('After close time')
+
+    if (thisRsvDate < openTimeDate || thisRsvDate >= closeTimeDate) {
+      throw new Error('Not a valid time')
     }
 
     const reservation = await Reservation.create(req.body)
@@ -133,6 +127,8 @@ const addReservation = async (req, res, next) => {
     } else if (e.message == 'Maximum exceeded') {
       e.message = `The user with ID ${req.user.id} has exceeded the maximum number of reservations (${MAXIMUM_RESERVATIONS})`
       e.statusCode = 409
+    } else if (e.message == 'Not a valid time') {
+      e.statusCode = 400
     }
     next(e)
   }
@@ -155,7 +151,8 @@ const updateReservation = async (req, res, next) => {
 
     if (!req.body.space) space_id = prevReservation.space.toString()
     if (!req.body.room) room_id = prevReservation.room.toString()
-    if (!req.body.reservationDate) reservationDate = prevReservation.reservationDate
+    if (!req.body.reservationDate)
+      reservationDate = prevReservation.reservationDate
 
     if (
       prevReservation.user.toString() !== req.user.id &&
@@ -173,23 +170,17 @@ const updateReservation = async (req, res, next) => {
     const openTimeDate = new Date(reservationDate)
     const closeTimeDate = new Date(reservationDate)
     const thisRsvDate = new Date(reservationDate)
-    openTimeDate.setUTCHours(
-      parseInt(opentime.substring(0,2)),
-      parseInt(opentime.substring(2,4))
+    openTimeDate.setHours(
+      parseInt(opentime.substring(0, 2)),
+      parseInt(opentime.substring(2, 4))
     )
-    closeTimeDate.setUTCHours(
-      parseInt(closetime.substring(0,2)),
-      parseInt(closetime.substring(2,4))
+    closeTimeDate.setHours(
+      parseInt(closetime.substring(0, 2)),
+      parseInt(closetime.substring(2, 4))
     )
-    thisRsvDate.setUTCHours(
-      thisRsvDate.getUTCHours(),
-      thisRsvDate.getUTCMinutes()
-    )
-    if (thisRsvDate < openTimeDate) {
-      throw new Error('Before open time')
-    }
-    if (thisRsvDate >= closeTimeDate) {
-      throw new Error('After close time')
+
+    if (thisRsvDate < openTimeDate || thisRsvDate >= closeTimeDate) {
+      throw new Error('Not a valid time')
     }
 
     const roomExists = await space.getRoom(room_id)
@@ -219,6 +210,8 @@ const updateReservation = async (req, res, next) => {
     } else if (e.message == 'Room not found') {
       e.message = `Room not found with id of ${room_id}`
       e.statusCode = 404
+    } else if (e.message == 'Not a valid time') {
+      e.statusCode = 400
     }
     next(e)
   }

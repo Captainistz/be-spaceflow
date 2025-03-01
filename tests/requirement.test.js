@@ -60,27 +60,48 @@ const testAdmin = {
   role: 'admin',
 }
 
+const createValidReservationDate = (nextNDays, hour, minute = 0) => {
+  const date = new Date()
+  date.setDate(date.getDate() + nextNDays)
+  date.setHours(hour, minute, 0, 0)
+  return date.toISOString()
+}
+
+const reservationDate = (nextNDays, timeOffset = 0) => {
+  const openHour = parseInt(testSpace.opentime.substring(0, 2))
+  const closeHour = parseInt(testSpace.closetime.substring(0, 2)) - 1
+
+  const validHour =
+    openHour + 1 + (timeOffset % (closeHour - openHour - 1))
+
+  return createValidReservationDate(nextNDays, validHour, 30)
+}
+
+const invalidReservationDate = (nextNDays, beforeOpening = true) => {
+  const openHour = parseInt(testSpace.opentime.substring(0, 2))
+  const closeHour = parseInt(testSpace.closetime.substring(0, 2))
+
+  const hour = beforeOpening ? openHour - 1 : closeHour + 1
+
+  return createValidReservationDate(nextNDays, hour, 0)
+}
+
 const testReservation = {
-  reservationDate: new Date(
-    Date.now() + 24 * 60 * 60 * 1000
-  ).toISOString(),
+  reservationDate: reservationDate(1),
 }
 
 describe('System Requirements Tests', () => {
-  // Connect to test database before all tests
   beforeAll(async () => {
     await connectDB()
     await User.deleteMany({})
     await Space.deleteMany({})
     await Reservation.deleteMany({})
 
-    // Create test space
     const space = await Space.create(testSpace)
     spaceId = space._id.toString()
     roomId = space.rooms[0]._id.toString()
   })
 
-  // Cleanup after all tests
   afterAll(async () => {
     await disconnectDB()
   })
@@ -97,14 +118,12 @@ describe('System Requirements Tests', () => {
       expect(res.body.token).toBeDefined()
       userToken = res.body.token
 
-      // Get user ID for future tests
       const userRes = await request(app)
         .get('/api/v1/auth/me')
         .set('Authorization', `Bearer ${userToken}`)
 
       userId = userRes.body.data._id
 
-      // Register second user for testing
       const res2 = await request(app)
         .post('/api/v1/auth/register')
         .send(testUser2)
@@ -119,7 +138,6 @@ describe('System Requirements Tests', () => {
 
       user2Id = user2Res.body.data._id
 
-      // Register admin for testing
       const adminRes = await request(app)
         .post('/api/v1/auth/register')
         .send(testAdmin)
@@ -140,7 +158,6 @@ describe('System Requirements Tests', () => {
         .send({
           name: 'Incomplete User',
           email: 'incomplete@test.com',
-          // Missing phone and password
         })
         .expect(400)
 
@@ -179,7 +196,6 @@ describe('System Requirements Tests', () => {
       const res = await request(app).get('/api/v1/auth/logout').expect(200)
 
       expect(res.body.success).toBe(true)
-      // Check cookie clearing in response headers
       expect(res.headers['set-cookie'][0]).toMatch(/token=none/)
     })
   })
@@ -202,7 +218,7 @@ describe('System Requirements Tests', () => {
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          ...testReservation,
+          reservationDate: reservationDate(1),
           room: roomId,
         })
         .expect(200)
@@ -218,9 +234,7 @@ describe('System Requirements Tests', () => {
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 48 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(2, 1),
           room: roomId,
         })
         .expect(200)
@@ -235,9 +249,7 @@ describe('System Requirements Tests', () => {
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 72 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(3, 2),
           room: roomId,
         })
         .expect(200)
@@ -252,38 +264,54 @@ describe('System Requirements Tests', () => {
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 96 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(4),
           room: roomId,
         })
-        .expect(409) // Conflict - over maximum allowed
+        .expect(409)
 
       expect(res.body.success).toBe(false)
     })
 
+    it('should reject reservations outside operating hours', async () => {
+      const resBefore = await request(app)
+        .post(`/api/v1/spaces/${spaceId}/reservations`)
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          reservationDate: invalidReservationDate(1, true),
+          room: roomId,
+        })
+        .expect(400)
+
+      expect(resBefore.body.success).toBe(false)
+
+      const resAfter = await request(app)
+        .post(`/api/v1/spaces/${spaceId}/reservations`)
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          reservationDate: invalidReservationDate(1, false),
+          room: roomId,
+        })
+        .expect(400)
+
+      expect(resAfter.body.success).toBe(false)
+    })
+
     it('should allow admin to make more than three reservations', async () => {
-      // First make 3 reservations
       for (let i = 0; i < 3; i++) {
         await request(app)
           .post(`/api/v1/spaces/${spaceId}/reservations`)
           .set('Authorization', `Bearer ${adminToken}`)
           .send({
-            reservationDate: new Date(
-              Date.now() + (i + 1) * 24 * 60 * 60 * 1000
-            ).toISOString(),
+            reservationDate: reservationDate(i + 1, i + 3),
             room: roomId,
           })
       }
 
-      // Try to make a fourth reservation
       const res = await request(app)
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 96 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(4, 6),
           room: roomId,
         })
         .expect(200)
@@ -304,7 +332,6 @@ describe('System Requirements Tests', () => {
       expect(res.body.count).toBe(3)
       expect(res.body.data.length).toBe(3)
 
-      // Verify all reservations belong to the user
       const allUserReservations = res.body.data.every(
         (reservation) => reservation.user === userId
       )
@@ -312,18 +339,14 @@ describe('System Requirements Tests', () => {
     })
 
     it("should not show other users' reservations", async () => {
-      // Create a reservation for second user
       await request(app)
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${user2Token}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 24 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(1, 7),
           room: roomId,
         })
 
-      // First user should still only see their own reservations
       const res = await request(app)
         .get('/api/v1/reservations')
         .set('Authorization', `Bearer ${userToken}`)
@@ -332,7 +355,6 @@ describe('System Requirements Tests', () => {
       expect(res.body.success).toBe(true)
       expect(res.body.count).toBe(3)
 
-      // Verify all reservations belong to the user
       const allUserReservations = res.body.data.every(
         (reservation) => reservation.user === userId
       )
@@ -343,10 +365,7 @@ describe('System Requirements Tests', () => {
   // Requirement 5: Edit Reservations
   describe('Requirement 5: Edit User Reservations', () => {
     it('should allow a registered user to edit their reservation', async () => {
-      const newDate = new Date(
-        Date.now() + 120 * 60 * 60 * 1000
-      ).toISOString()
-
+      const newDate = reservationDate(5, 8)
       const res = await request(app)
         .put(`/api/v1/reservations/${reservationId}`)
         .set('Authorization', `Bearer ${userToken}`)
@@ -361,28 +380,33 @@ describe('System Requirements Tests', () => {
       )
     })
 
+    it('should prevent updating to a time outside operating hours', async () => {
+      const res = await request(app)
+        .put(`/api/v1/reservations/${reservationId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          reservationDate: invalidReservationDate(2, false),
+        })
+        .expect(400)
+
+      expect(res.body.success).toBe(false)
+    })
+
     it("should prevent a registered user from editing other users' reservations", async () => {
-      // Create a reservation for second user
       const otherRes = await request(app)
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${user2Token}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 36 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(3, 9),
           room: roomId,
         })
 
       const otherReservationId = otherRes.body.data._id
-
-      // First user should not be able to edit second user's reservation
       await request(app)
         .put(`/api/v1/reservations/${otherReservationId}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 48 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(2),
         })
         .expect(401)
     })
@@ -398,35 +422,28 @@ describe('System Requirements Tests', () => {
 
       expect(res.body.success).toBe(true)
 
-      // Verify the reservation was deleted
-      const verifyRes = await request(app)
+      await request(app)
         .get(`/api/v1/reservations/${reservation3Id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .expect(404)
     })
 
     it("should prevent a registered user from deleting other users' reservations", async () => {
-      // Create a reservation for second user
       const otherRes = await request(app)
         .post(`/api/v1/spaces/${spaceId}/reservations`)
         .set('Authorization', `Bearer ${user2Token}`)
         .send({
-          reservationDate: new Date(
-            Date.now() + 84 * 60 * 60 * 1000
-          ).toISOString(),
+          reservationDate: reservationDate(3, 10),
           room: roomId,
         })
 
       const otherReservationId = otherRes.body.data._id
-
-      // First user should not be able to delete second user's reservation
       await request(app)
         .delete(`/api/v1/reservations/${otherReservationId}`)
         .set('Authorization', `Bearer ${userToken}`)
         .expect(401)
 
-      // Verify the reservation still exists
-      const verifyRes = await request(app)
+      await request(app)
         .get(`/api/v1/reservations/${otherReservationId}`)
         .set('Authorization', `Bearer ${user2Token}`)
         .expect(200)
@@ -443,8 +460,7 @@ describe('System Requirements Tests', () => {
 
       expect(res.body.success).toBe(true)
 
-      // Should see both user's and admin's reservations
-      expect(res.body.count).toBeGreaterThan(5) // At least 6 reservations from all tests
+      expect(res.body.count).toBeGreaterThan(5)
     })
 
     it('should allow admin to view specific user reservations', async () => {
@@ -461,10 +477,7 @@ describe('System Requirements Tests', () => {
   // Requirement 8: Admin Edit Any Reservation
   describe('Requirement 8: Admin Edit Any Reservation', () => {
     it("should allow admin to edit any user's reservation", async () => {
-      const newDate = new Date(
-        Date.now() + 144 * 60 * 60 * 1000
-      ).toISOString()
-
+      const newDate = reservationDate(6, 11)
       const res = await request(app)
         .put(`/api/v1/reservations/${reservationId}`)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -477,7 +490,7 @@ describe('System Requirements Tests', () => {
       expect(new Date(res.body.data.reservationDate).toISOString()).toBe(
         newDate
       )
-      expect(res.body.data.user).toBe(userId) // Still belongs to original user
+      expect(res.body.data.user).toBe(userId)
     })
   })
 
@@ -491,8 +504,7 @@ describe('System Requirements Tests', () => {
 
       expect(res.body.success).toBe(true)
 
-      // Verify the reservation was deleted
-      const verifyRes = await request(app)
+      await request(app)
         .get(`/api/v1/reservations/${reservation2Id}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(404)

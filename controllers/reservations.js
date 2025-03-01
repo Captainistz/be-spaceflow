@@ -64,7 +64,7 @@ const getReservation = async (req, res, next) => {
 // @access Public
 const addReservation = async (req, res, next) => {
   const { space_id } = req.params
-  const { room } = req.body
+  const { room, reservationDate } = req.body
   const MAXIMUM_RESERVATIONS = process.env.MAXIMUM_RESERVATIONS
 
   req.body.space = space_id
@@ -76,7 +76,7 @@ const addReservation = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const roomExists = await space.getRoom(room)
+    const roomExists = space.getRoom(room)
     if (!roomExists) {
       throw new Error('Room not found')
     }
@@ -89,6 +89,11 @@ const addReservation = async (req, res, next) => {
       req.user.role !== 'admin'
     ) {
       throw new Error('Maximum exceeded')
+    }
+
+    const isTimeValid = space.checkOpeningHours(reservationDate)
+    if (!isTimeValid) {
+      throw new Error('Not a valid time')
     }
 
     const reservation = await Reservation.create(req.body)
@@ -110,6 +115,8 @@ const addReservation = async (req, res, next) => {
     } else if (e.message == 'Maximum exceeded') {
       e.message = `The user with ID ${req.user.id} has exceeded the maximum number of reservations (${MAXIMUM_RESERVATIONS})`
       e.statusCode = 409
+    } else if (e.message == 'Not a valid time') {
+      e.statusCode = 400
     }
     next(e)
   }
@@ -122,6 +129,7 @@ const updateReservation = async (req, res, next) => {
   const { id } = req.params
   let space_id = req.body.space
   let room_id = req.body.room
+  let reservationDate = req.body.reservationDate
 
   try {
     const prevReservation = await Reservation.findById(id)
@@ -131,6 +139,8 @@ const updateReservation = async (req, res, next) => {
 
     if (!req.body.space) space_id = prevReservation.space.toString()
     if (!req.body.room) room_id = prevReservation.room.toString()
+    if (!req.body.reservationDate)
+      reservationDate = prevReservation.reservationDate
 
     if (
       prevReservation.user.toString() !== req.user.id &&
@@ -144,7 +154,12 @@ const updateReservation = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const roomExists = await space.getRoom(room_id)
+    const isTimeValid = space.checkOpeningHours(reservationDate)
+    if (!isTimeValid) {
+      throw new Error('Not a valid time')
+    }
+
+    const roomExists = space.getRoom(room_id)
     if (!roomExists) {
       throw new Error('Room not found')
     }
@@ -171,6 +186,8 @@ const updateReservation = async (req, res, next) => {
     } else if (e.message == 'Room not found') {
       e.message = `Room not found with id of ${room_id}`
       e.statusCode = 404
+    } else if (e.message == 'Not a valid time') {
+      e.statusCode = 400
     }
     next(e)
   }

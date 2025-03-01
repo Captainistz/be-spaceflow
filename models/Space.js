@@ -78,7 +78,7 @@ SpaceSchema.path('rooms').validate(function (rooms) {
   return roomNumbers.length === uniqueRoomNumbers.size
 }, 'Room numbers must be unique within a space')
 
-SpaceSchema.methods.getRoomIdx = async function (room_id) {
+SpaceSchema.methods.getRoomIdx = function (room_id) {
   if (!room_id) return -1
   const idx = this.rooms.findIndex(
     (room) => room._id.toString() === room_id
@@ -86,12 +86,30 @@ SpaceSchema.methods.getRoomIdx = async function (room_id) {
   return idx
 }
 
-SpaceSchema.methods.getRoom = async function (room_id) {
+SpaceSchema.methods.getRoom = function (room_id) {
   if (!room_id) return null
   const foundRoom = this.rooms.find(
     (room) => room._id.toString() === room_id
   )
   return foundRoom
+}
+
+SpaceSchema.methods.checkOpeningHours = function (reservationDate) {
+  const openDateTime = new Date(reservationDate)
+  const closeDateTime = new Date(reservationDate)
+  const rsvDateTime = new Date(reservationDate)
+
+  openDateTime.setHours(
+    parseInt(this.opentime.substring(0, 2)),
+    parseInt(this.opentime.substring(2, 4))
+  )
+
+  closeDateTime.setHours(
+    parseInt(this.closetime.substring(0, 2)),
+    parseInt(this.closetime.substring(2, 4))
+  )
+
+  return openDateTime <= rsvDateTime && rsvDateTime < closeDateTime
 }
 
 SpaceSchema.virtual('reservations', {

@@ -32,7 +32,7 @@ const getRoom = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const room = await space.getRoom(id)
+    const room = space.getRoom(id)
     if (!room) {
       throw new Error('Room not found')
     }
@@ -95,7 +95,7 @@ const updateRoom = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const roomIdx = await space.getRoomIdx(id)
+    const roomIdx = space.getRoomIdx(id)
     if (roomIdx == -1) {
       throw new Error('Room not found')
     }
@@ -136,7 +136,7 @@ const deleteRoom = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const roomIdx = await space.getRoomIdx(id)
+    const roomIdx = space.getRoomIdx(id)
     if (roomIdx === -1) {
       throw new Error('Room not found')
     }

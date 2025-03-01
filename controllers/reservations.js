@@ -76,7 +76,7 @@ const addReservation = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const roomExists = await space.getRoom(room)
+    const roomExists = space.getRoom(room)
     if (!roomExists) {
       throw new Error('Room not found')
     }
@@ -91,20 +91,8 @@ const addReservation = async (req, res, next) => {
       throw new Error('Maximum exceeded')
     }
 
-    const { opentime, closetime } = space
-    const openTimeDate = new Date(reservationDate)
-    const closeTimeDate = new Date(reservationDate)
-    const thisRsvDate = new Date(reservationDate)
-    openTimeDate.setHours(
-      parseInt(opentime.substring(0, 2)),
-      parseInt(opentime.substring(2, 4))
-    )
-    closeTimeDate.setHours(
-      parseInt(closetime.substring(0, 2)),
-      parseInt(closetime.substring(2, 4))
-    )
-
-    if (thisRsvDate < openTimeDate || thisRsvDate >= closeTimeDate) {
+    const isTimeValid = space.checkOpeningHours(reservationDate)
+    if (!isTimeValid) {
       throw new Error('Not a valid time')
     }
 
@@ -166,24 +154,12 @@ const updateReservation = async (req, res, next) => {
       throw new Error('Space not found')
     }
 
-    const { opentime, closetime } = space
-    const openTimeDate = new Date(reservationDate)
-    const closeTimeDate = new Date(reservationDate)
-    const thisRsvDate = new Date(reservationDate)
-    openTimeDate.setHours(
-      parseInt(opentime.substring(0, 2)),
-      parseInt(opentime.substring(2, 4))
-    )
-    closeTimeDate.setHours(
-      parseInt(closetime.substring(0, 2)),
-      parseInt(closetime.substring(2, 4))
-    )
-
-    if (thisRsvDate < openTimeDate || thisRsvDate >= closeTimeDate) {
+    const isTimeValid = space.checkOpeningHours(reservationDate)
+    if (!isTimeValid) {
       throw new Error('Not a valid time')
     }
 
-    const roomExists = await space.getRoom(room_id)
+    const roomExists = space.getRoom(room_id)
     if (!roomExists) {
       throw new Error('Room not found')
     }

@@ -3,6 +3,7 @@ const request = require('supertest')
 const app = require('../app')
 const Space = require('../models/Space')
 const User = require('../models/User')
+const { connectDB, disconnectDB } = require('./memory-server')
 
 let adminToken
 let userToken
@@ -43,7 +44,7 @@ const testUser = {
 describe('Spaces endpoint tests', () => {
   // Connect to test database before all tests
   beforeAll(async () => {
-    await mongoose.connect(process.env.MONGO_URI)
+    await connectDB()
     await Space.deleteMany({})
     await User.deleteMany({})
 
@@ -57,7 +58,7 @@ describe('Spaces endpoint tests', () => {
 
   // Cleanup after all tests
   afterAll(async () => {
-    await mongoose.connection.close()
+    await disconnectDB()
   })
 
   // Clear database before each test

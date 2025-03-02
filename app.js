@@ -1,5 +1,7 @@
 const fs = require('fs')
 const hpp = require('hpp')
+const csurf = require('csurf')
+const session = require('express-session')
 const dotenv = require('dotenv')
 const helmet = require('helmet')
 const morgan = require('morgan')
@@ -8,7 +10,6 @@ const cookirParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
 const { xss } = require('express-xss-sanitizer')
 const mongoSanitize = require('express-mongo-sanitize')
-
 const connectDB = require('./config/db')
 const globalErrorHandler = require('./middleware/errorHandler')
 
@@ -28,6 +29,21 @@ app.use(mongoSanitize())
 app.use(xss())
 app.use(helmet())
 app.use(hpp())
+
+if (process.env.NODE_ENV !== 'test') {
+  // Protect CSRF
+  app.use(
+    session({
+      secret: process.env.CSRF_SECRET,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+      },
+      resave: false,
+      saveUninitialized: false,
+    })
+  )
+  app.use(csurf())
+}
 
 // Logging
 if (process.env.NODE_ENV === 'development') {

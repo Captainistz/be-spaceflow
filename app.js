@@ -1,6 +1,8 @@
+const fs = require('fs')
 const hpp = require('hpp')
 const dotenv = require('dotenv')
 const helmet = require('helmet')
+const morgan = require('morgan')
 const express = require('express')
 const cookirParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
@@ -22,10 +24,22 @@ const app = express()
 // Setup express
 app.use(express.json())
 app.use(cookirParser())
-app.use(xss())
 app.use(mongoSanitize())
+app.use(xss())
 app.use(helmet())
 app.use(hpp())
+
+// Logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
+if (process.env.NODE_ENV !== 'test') {
+  app.use(
+    morgan('common', {
+      stream: fs.createWriteStream('./logs/access.log', { flags: 'a' }),
+    })
+  )
+}
 
 // Rate limit
 const limiter = rateLimit({

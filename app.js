@@ -1,6 +1,11 @@
-const express = require('express')
+const hpp = require('hpp')
 const dotenv = require('dotenv')
+const helmet = require('helmet')
+const express = require('express')
 const cookirParser = require('cookie-parser')
+const rateLimit = require('express-rate-limit')
+const { xss } = require('express-xss-sanitizer')
+const mongoSanitize = require('express-mongo-sanitize')
 
 const connectDB = require('./config/db')
 const globalErrorHandler = require('./middleware/errorHandler')
@@ -14,9 +19,20 @@ dotenv.config({ path: configPath })
 
 const app = express()
 
-// Middleware for parsing JSON bodies
+// Setup express
 app.use(express.json())
 app.use(cookirParser())
+app.use(xss())
+app.use(mongoSanitize())
+app.use(helmet())
+app.use(hpp())
+
+// Rate limit
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 100,
+  limit: 100,
+})
+app.use(limiter)
 
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'))

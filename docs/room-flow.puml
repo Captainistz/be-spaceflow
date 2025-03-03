@@ -73,4 +73,20 @@ Server -> AuthMiddleware : protect()
 AuthMiddleware --> Server : User authenticated
 Server -> AuthMiddleware : authorize('admin')
 AuthMiddleware --> Server : User authorized
-Server -> RoomsController
+Server -> RoomsController : deleteRoom()
+RoomsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+Space --> RoomsController : Space found
+RoomsController -> Space : getRoomIdx()
+Space --> RoomsController : RoomIdx found
+RoomsController -> Reservation : deleteMany({ room: id })
+Reservation -> MongoDB : Delete reservations
+MongoDB --> Reservation : Reservations deleted
+RoomsController -> Space : rooms.splice()
+Space -> MongoDB : Save space without room
+MongoDB --> Space : Space saved
+RoomsController --> Server : Return success
+Server --> Client : 200 OK
+
+@enduml

@@ -1,0 +1,103 @@
+@startuml Reservations Sequence
+
+actor Client
+participant "Express Server" as Server
+participant ReservationsController
+participant AuthMiddleware
+participant Space
+participant Reservation
+database MongoDB
+
+title Reservations API Flow
+
+== Get All Reservations ==
+Client -> Server : GET /api/v1/reservations
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> ReservationsController : getReservations()
+ReservationsController -> Reservation : find()
+Reservation -> MongoDB : Query reservations
+MongoDB --> Reservation : Reservations records
+Reservation --> ReservationsController : Reservations data
+ReservationsController --> Server : Return reservations
+Server --> Client : 200 OK with reservations
+
+== Get Single Reservation ==
+Client -> Server : GET /api/v1/reservations/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware -->  Server : User authenticated
+Server -> ReservationsController : getReservation()
+ReservationsController -> Reservation : findById()
+Reservation -> MongoDB : Query reservation
+MongoDB --> Reservation : Reservation record
+Reservation --> ReservationsController : Reservation data
+ReservationsController --> Server : Return reservation
+Server --> Client : 200 OK with reservation
+
+== Create Reservation ==
+Client -> Server : POST /api/v1/spaces/:space_id/reservations
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('user','admin')
+AuthMiddleware --> Server : User authorized
+Server -> ReservationsController : addReservation()
+ReservationsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+Space --> ReservationsController : Space found
+ReservationsController -> Space : getRoom()
+Space --> ReservationsController : Room found
+ReservationsController -> Space : checkOpeningHours()
+Space --> ReservationsController : Time Validated
+ReservationsController -> Reservation : create()
+Reservation -> MongoDB : Save reservation
+MongoDB --> Reservation : Reservation saved
+Reservation --> ReservationsController : Reservation data
+ReservationsController --> Server : Return reservation
+Server --> Client : 201 Created with reservation
+
+== Update Reservation ==
+Client -> Server : PUT /api/v1/reservations/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('user','admin')
+AuthMiddleware --> Server : User authorized
+Server -> ReservationsController : updateReservation()
+ReservationsController -> Reservation : findById()
+Reservation -> MongoDB : Query reservation
+MongoDB --> Reservation : Reservation record
+Reservation --> ReservationsController : Reservation found
+ReservationsController ->  Space : findById()
+Space -> MongoDB : Query Space
+MongoDB --> Space : Space record
+Space --> ReservationsController : Space found
+ReservationsController -> Space : getRoom()
+Space --> ReservationsController : Room found
+ReservationsController -> Space : checkOpeningHours()
+Space --> ReservationsController : Time Validated
+ReservationsController -> Reservation : findByIdAndUpdate()
+Reservation -> MongoDB : Update reservation
+MongoDB --> Reservation : Updated reservation
+Reservation --> ReservationsController : Reservation data
+ReservationsController --> Server : Return reservation
+Server --> Client : 200 OK with reservation
+
+== Delete Reservation == 
+Client -> Server : DELETE /api/v1/reservations/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('user','admin')
+AuthMiddleware --> Server : User authorized
+Server -> ReservationsController : deleteReservation()
+ReservationsController -> Reservation : findById()
+Reservation -> MongoDB : Query reservation
+MongoDB --> Reservation : Reservation record
+ReservationsController -> Reservation : deleteOne()
+Reservation -> MongoDB : Delete reservation
+MongoDB --> Reservation : Reservation deleted
+ReservationsController --> Server : Return success
+Server --> Client : 200 OK
+
+
+
+@enduml

@@ -1,0 +1,146 @@
+@startuml SpaceFlow Class Diagram
+
+left to right direction
+skinparam linetype ortho
+skinparam classFontStyle bold
+
+
+title SpaceFlow - Class Diagram
+
+package "SpaceFlow" {
+    class "<<Application>>\nSpaceFlowService" as SpaceFlowService {}
+
+    rectangle "API Resources" as APIResources {
+        rectangle "Space Management" as SpaceManagement {
+            rectangle "Spaces" {
+
+                class "<<Resource>>\nSpaces" as ResourceSpaces {
+                    <<GET>> +getSpaces(): Space[]
+                    <<POST>> +addSpace(): Space
+                }
+
+                class "<<Resource>>\nSpace" as ResourceSpace {
+                    <<GET>> +getSpace(): Space
+                    <<PUT>> +updateSpace(): Space
+                    <<DELETE>> +deleteSpace(): void
+                }
+            }
+            rectangle Rooms {
+                class "<<Resource>>\nRooms" as ResourceRooms {
+                    <<GET>> +getRooms(): Room[]
+                    <<POST>> +addRoom(): Room
+                }
+                
+                class "<<Resource>>\nRoom" as ResourceRoom {
+                    <<GET>> +getRoom(): Room
+                    <<PUT>> +updateRoom(): Room
+                    <<DELETE>> +deleteRoom(): void
+                }
+            }
+        }
+
+        rectangle "Authentication" as Authentication {
+            class "<<Resource>>\nAuth" as ResourceAuth {
+              <<POST>> +register(): Token
+              <<POST>> +login(): Token
+              <<GET>> +logout(): void
+              <<GET>> +me(): User
+            }
+        }
+
+        rectangle "Reservation Management" as ReservationManagement {
+            class "<<Resource>>\nReservations" as ResourceReservations {
+                <<GET>> +getReservations(): Reservation[]
+                <<POST>> +addReservation(): Reservation
+            }
+
+            class "<<Resource>>\nReservation" as ResourceReservation {
+                <<GET>> +getReservation(): Reservation
+                <<PUT>> +updateReservation(): Reservation
+                <<DELETE>> +deleteReservation(): void
+            }
+        }
+    }
+
+    rectangle "Data Models" {
+        together {
+            class "<<Representation>>\nSpace" as RepresentationSpace {
+                -name
+                -address
+                -district
+                -province
+                -postalcode
+                -tel
+                -opentime
+                -closetime
+                -rooms[]
+            }
+
+            class "<<Representation>>\nRoom" as RepresentationRoom {
+                -roomNumber
+                -capacity
+                -facilities[]
+            }
+        }
+
+        class "<<Representation>>\nReservation" as RepresentationReservation {
+            -reservationDate
+            -user
+            -space
+            -room
+            -createdAt
+        }
+
+        class "<<Representation>>\nUser" as RepresentationUser {
+            -name
+            -email
+            -phone
+            -role
+            -password
+            -createdAt
+        }
+
+    }
+    
+
+    SpaceManagement -[hidden]d-> ReservationManagement
+    ReservationManagement -[hidden]d-> Authentication
+
+    ' Path relationships
+
+    SpaceFlowService .d.> ResourceReservations: "/api/v1/reservations\n<<Path>>"
+    SpaceFlowService ..> ResourceAuth: "/api/v1/auth\n<<Path>>"
+    SpaceFlowService ..> ResourceSpaces: "/api/v1/spaces\n<<Path>>"
+
+
+    ResourceSpaces ..> ResourceSpace: "/{id}\n<<Path>>"
+    ResourceSpaces ..> ResourceReservations: "/{space_id}/reservations\n<<Path>>"
+    ResourceSpaces ..> ResourceRooms: "/{space_id}/rooms\n<<Path>>"
+    ResourceRooms ..> ResourceRoom: "/{id}\n<<Path>>"
+    ResourceReservations ...> ResourceReservation: "/{id}\n<<Path>>"
+
+    ' Use relationships
+    ResourceSpace ..> RepresentationSpace: "<<use>>"
+    ResourceSpaces ..> RepresentationSpace: "<<use>>"
+    ResourceRoom ..> RepresentationRoom: "<<use>>"
+    ResourceRooms ..> RepresentationRoom: "<<use>>"
+
+ 
+
+    ResourceReservation ..> RepresentationReservation: "<<use>>"
+    ResourceReservations ..> RepresentationReservation: "<<use>>"
+    
+    ResourceAuth ..> RepresentationUser: "<<use>>"
+    
+    ' Model relationships
+    RepresentationSpace ..> RepresentationRoom: "<<contains>>"
+
+    ' Authentication
+    ' note "Protected by JWT Authentication" as AuthNote
+    ' AuthNote .. ResourceReservations
+    ' AuthNote .. ResourceReservation
+    ' AuthNote .. ResourceRooms
+    ' AuthNote .. ResourceRoom
+}
+
+@enduml

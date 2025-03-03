@@ -20,13 +20,15 @@ const getSpaces = async (req, res, next) => {
 
     query = Space.find(JSON.parse(queryString)).populate('reservations')
 
-    if (req.query.select) {
-      const fields = req.query.select.split(',').join(' ')
+    const select = req.query.select
+    if (select && typeof select === 'string') {
+      const fields = select.split(',').join(' ')
       query = query.select(fields)
     }
 
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ')
+    const sort = req.query.sort
+    if (sort && typeof sort === 'string') {
+      const sortBy = sort.split(',').join(' ')
       query = query.sort(sortBy)
     } else {
       query = query.sort('-createdAt')

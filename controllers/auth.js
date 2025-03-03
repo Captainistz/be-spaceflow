@@ -79,6 +79,7 @@ const logout = async (_, res, next) => {
     res.cookie('token', 'none', {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
     })
 
     res.status(200).json({ success: true, data: {} })

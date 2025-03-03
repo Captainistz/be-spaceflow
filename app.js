@@ -1,7 +1,15 @@
-const express = require('express')
+const fs = require('fs')
+const hpp = require('hpp')
+const csurf = require('csurf')
+const session = require('express-session')
 const dotenv = require('dotenv')
+const helmet = require('helmet')
+const morgan = require('morgan')
+const express = require('express')
 const cookirParser = require('cookie-parser')
-
+const rateLimit = require('express-rate-limit')
+const { xss } = require('express-xss-sanitizer')
+const mongoSanitize = require('express-mongo-sanitize')
 const connectDB = require('./config/db')
 const globalErrorHandler = require('./middleware/errorHandler')
 
@@ -14,9 +22,47 @@ dotenv.config({ path: configPath })
 
 const app = express()
 
-// Middleware for parsing JSON bodies
+// Setup express
 app.use(express.json())
 app.use(cookirParser())
+app.use(mongoSanitize())
+app.use(xss())
+app.use(helmet())
+app.use(hpp())
+
+if (process.env.NODE_ENV !== 'test') {
+  // Protect CSRF
+  app.use(
+    session({
+      secret: process.env.CSRF_SECRET,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+      },
+      resave: false,
+      saveUninitialized: false,
+    })
+  )
+  app.use(csurf())
+}
+
+// Logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
+if (process.env.NODE_ENV !== 'test') {
+  app.use(
+    morgan('common', {
+      stream: fs.createWriteStream('./logs/access.log', { flags: 'a' }),
+    })
+  )
+}
+
+// Rate limit
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 100,
+  limit: 100,
+})
+app.use(limiter)
 
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'))

@@ -1,0 +1,87 @@
+@startuml Rooms Sequence
+
+actor Client
+participant "Express Server" as Server
+participant RoomsController
+participant AuthMiddleware
+participant Space
+participant Reservation
+database MongoDB
+
+title Rooms API Flow
+
+== Get All Rooms ==
+Client -> Server : GET /api/v1/spaces/:space_id/rooms
+Server -> RoomsController : getRooms()
+RoomsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+Space --> RoomsController : Space data with rooms
+RoomsController --> Server : Return rooms
+Server --> Client : 200 OK with rooms
+
+== Get Single Room ==
+Client -> Server : GET /api/v1/spaces/:space_id/rooms/:id
+Server -> RoomsController : getRoom()
+RoomsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+RoomsController -> Space : getRoom()
+Space --> RoomsController : Room data
+RoomsController --> Server : Return room
+Server --> Client : 200 OK with room
+
+== Add Room ==
+Client -> Server : POST /api/v1/spaces/:space_id/rooms
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('admin')
+AuthMiddleware --> Server : User authorized
+Server -> RoomsController : addRoom()
+RoomsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+RoomsController -> Space : rooms.push()
+Space -> MongoDB : Save space with new room
+MongoDB --> Space : Space saved
+RoomsController --> Server : Return new room
+Server --> Client : 201 Created with room
+
+== Update Room ==
+Client -> Server : PUT /api/v1/spaces/:space_id/rooms/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('admin')
+AuthMiddleware --> Server : User authorized
+Server -> RoomsController : updateRoom()
+RoomsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+RoomsController -> Space : getRoomIdx()
+RoomsController -> Space : Update room fields
+Space -> MongoDB : Save updated space
+MongoDB --> Space : Space saved
+RoomsController --> Server : Return updated room
+Server --> Client : 200 OK with room
+
+== Delete Room ==
+Client -> Server : DELETE /api/v1/spaces/:space_id/rooms/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('admin')
+AuthMiddleware --> Server : User authorized
+Server -> RoomsController : deleteRoom()
+RoomsController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+RoomsController -> Space : getRoomIdx()
+RoomsController -> Reservation : deleteMany({room: id})
+Reservation -> MongoDB : Delete reservations
+MongoDB --> Reservation : Reservations deleted
+RoomsController -> Space : rooms.splice()
+Space -> MongoDB : Save space without room
+MongoDB --> Space : Space saved
+RoomsController --> Server : Return success
+Server --> Client : 200 OK
+
+@enduml

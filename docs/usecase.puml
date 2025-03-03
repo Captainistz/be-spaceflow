@@ -21,6 +21,7 @@ Admin --|> User
 rectangle SpaceFlow {
   ' Visitor Use Cases
   usecase "View Spaces" as ViewSpaces
+  usecase "View Rooms" as ViewRooms
   usecase "Register Account" as Register
   usecase "Login" as Login
   
@@ -30,10 +31,12 @@ rectangle SpaceFlow {
   
   ' Admin Use Cases
   usecase "Manage Spaces" as ManageSpaces
+  usecase "Manage Rooms" as ManageRooms
   usecase "Manage Any Reservation" as ManageAnyReservation
   
   ' Visitor associations
   Visitor ---> ViewSpaces
+  Visitor --> ViewRooms
   Visitor --> Register
   Visitor --> Login
   
@@ -43,16 +46,11 @@ rectangle SpaceFlow {
   
   ' Admin associations
   Admin --> ManageSpaces
+  Admin --> ManageRooms
   Admin --> ManageAnyReservation
 
   ' Note
   note "Manage = Create/Update/Delete" as Note
 }
-
-
-
-
-
-
 
 @enduml

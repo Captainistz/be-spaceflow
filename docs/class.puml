@@ -12,15 +12,30 @@ package "SpaceFlow" {
 
     rectangle "API Resources" as APIResources {
         rectangle "Space Management" as SpaceManagement {
-            class "<<Resource>>\nSpaces" as ResourceSpaces {
-                <<GET>> +getSpaces(): Space[]
-                <<POST>> +addSpace(): Space
-            }
+            rectangle "Spaces" {
 
-            class "<<Resource>>\nSpace" as ResourceSpace {
-                <<GET>> +getSpace(): Space
-                <<PUT>> +updateSpace(): Space
-                <<DELETE>> +deleteSpace(): void
+                class "<<Resource>>\nSpaces" as ResourceSpaces {
+                    <<GET>> +getSpaces(): Space[]
+                    <<POST>> +addSpace(): Space
+                }
+
+                class "<<Resource>>\nSpace" as ResourceSpace {
+                    <<GET>> +getSpace(): Space
+                    <<PUT>> +updateSpace(): Space
+                    <<DELETE>> +deleteSpace(): void
+                }
+            }
+            rectangle Rooms {
+                class "<<Resource>>\nRooms" as ResourceRooms {
+                    <<GET>> +getRooms(): Room[]
+                    <<POST>> +addRoom(): Room
+                }
+                
+                class "<<Resource>>\nRoom" as ResourceRoom {
+                    <<GET>> +getRoom(): Room
+                    <<PUT>> +updateRoom(): Room
+                    <<DELETE>> +deleteRoom(): void
+                }
             }
         }
 
@@ -45,19 +60,27 @@ package "SpaceFlow" {
                 <<DELETE>> +deleteReservation(): void
             }
         }
-
     }
 
     rectangle "Data Models" {
-        class "<<Representation>>\nSpace" as RepresentationSpace {
-            -name
-            -address
-            -district
-            -province
-            -postalcode
-            -tel
-            -opentime
-            -closetime
+        together {
+            class "<<Representation>>\nSpace" as RepresentationSpace {
+                -name
+                -address
+                -district
+                -province
+                -postalcode
+                -tel
+                -opentime
+                -closetime
+                -rooms[]
+            }
+
+            class "<<Representation>>\nRoom" as RepresentationRoom {
+                -roomNumber
+                -capacity
+                -facilities[]
+            }
         }
 
         class "<<Representation>>\nReservation" as RepresentationReservation {
@@ -78,35 +101,46 @@ package "SpaceFlow" {
         }
 
     }
+    
 
-    ' Formatting
-    RepresentationUser -[hidden]d> RepresentationReservation
     SpaceManagement -[hidden]d-> ReservationManagement
     ReservationManagement -[hidden]d-> Authentication
 
-
     ' Path relationships
-    SpaceFlowService ...> ResourceReservations: "/api/v1/reservations\n<<Path>>"
-    SpaceFlowService ...> ResourceAuth: "/api/v1/auth\n<<Path>>"
-    SpaceFlowService ....> ResourceSpaces: "/api/v1/spaces\n<<Path>>"
 
-    ResourceSpaces ...> ResourceSpace: "/{id}\n<<Path>>"
-    ResourceSpaces ...> ResourceReservations: "/{space_id}/reservations\n<<Path>>"
+    SpaceFlowService .d.> ResourceReservations: "/api/v1/reservations\n<<Path>>"
+    SpaceFlowService ..> ResourceAuth: "/api/v1/auth\n<<Path>>"
+    SpaceFlowService ..> ResourceSpaces: "/api/v1/spaces\n<<Path>>"
+
+
+    ResourceSpaces ..> ResourceSpace: "/{id}\n<<Path>>"
+    ResourceSpaces ..> ResourceReservations: "/{space_id}/reservations\n<<Path>>"
+    ResourceSpaces ..> ResourceRooms: "/{space_id}/rooms\n<<Path>>"
+    ResourceRooms ..> ResourceRoom: "/{id}\n<<Path>>"
     ResourceReservations ...> ResourceReservation: "/{id}\n<<Path>>"
 
     ' Use relationships
-    ResourceSpace ...> RepresentationSpace: "<<use>>"
-    ResourceSpaces ...> RepresentationSpace: "<<use>>"
-    ResourceReservation ...> RepresentationReservation: "<<use>>"
-    ResourceReservations ...> RepresentationReservation: "<<use>>"
-    ResourceAuth ...> RepresentationUser: "<<use>>"
+    ResourceSpace ..> RepresentationSpace: "<<use>>"
+    ResourceSpaces ..> RepresentationSpace: "<<use>>"
+    ResourceRoom ..> RepresentationRoom: "<<use>>"
+    ResourceRooms ..> RepresentationRoom: "<<use>>"
 
+ 
+
+    ResourceReservation ..> RepresentationReservation: "<<use>>"
+    ResourceReservations ..> RepresentationReservation: "<<use>>"
+    
+    ResourceAuth ..> RepresentationUser: "<<use>>"
+    
+    ' Model relationships
+    RepresentationSpace ..> RepresentationRoom: "<<contains>>"
 
     ' Authentication
     ' note "Protected by JWT Authentication" as AuthNote
     ' AuthNote .. ResourceReservations
     ' AuthNote .. ResourceReservation
-    ' AuthNote .. ResourceAuth
+    ' AuthNote .. ResourceRooms
+    ' AuthNote .. ResourceRoom
 }
 
 @enduml

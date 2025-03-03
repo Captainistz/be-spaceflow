@@ -1,0 +1,80 @@
+@startuml Spaces Sequence
+
+actor Client
+participant "Express Server" as Server
+participant SpacesController
+participant AuthMiddleware
+participant Space
+participant Reservation
+database MongoDB
+
+title Spaces API Flow
+
+== Get All Spaces ==
+Client -> Server : GET /api/v1/spaces
+Server -> SpacesController : getSpaces()
+SpacesController -> Space : find()
+Space -> MongoDB : Query spaces
+MongoDB --> Space : Spaces records
+Space --> SpacesController : Spaces data
+SpacesController --> Server : Return spaces
+Server --> Client : 200 OK with spaces
+
+== Get Single Space ==
+Client -> Server : GET /api/v1/spaces/:id
+Server -> SpacesController : getSpace()
+SpacesController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+Space --> SpacesController : Space data
+SpacesController --> Server : Return space
+Server --> Client : 200 OK with space
+
+== Create Space ==
+Client -> Server : POST /api/v1/spaces
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('admin')
+AuthMiddleware --> Server : User authorized
+Server -> SpacesController : addSpace()
+SpacesController -> Space : create()
+Space -> MongoDB : Save space
+MongoDB --> Space : Space saved
+Space --> SpacesController : Space data
+SpacesController --> Server : Return space
+Server --> Client : 201 Created with space
+
+== Update Space ==
+Client -> Server : PUT /api/v1/spaces/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('admin')
+AuthMiddleware --> Server : User authorized
+Server -> SpacesController : updateSpace()
+SpacesController -> Space : findByIdAndUpdate()
+Space -> MongoDB : Update space
+MongoDB --> Space : Updated space
+Space --> SpacesController : Updated space data
+SpacesController --> Server : Return space
+Server --> Client : 200 OK with space
+
+== Delete Space ==
+Client -> Server : DELETE /api/v1/spaces/:id
+Server -> AuthMiddleware : protect()
+AuthMiddleware --> Server : User authenticated
+Server -> AuthMiddleware : authorize('admin')
+AuthMiddleware --> Server : User authorized
+Server -> SpacesController : deleteSpace()
+SpacesController -> Space : findById()
+Space -> MongoDB : Query space
+MongoDB --> Space : Space record
+SpacesController -> Reservation : deleteMany({space: id})
+Reservation -> MongoDB : Delete reservations
+MongoDB --> Reservation : Reservations deleted
+SpacesController -> Space : deleteOne()
+Space -> MongoDB : Delete space
+MongoDB --> Space : Space deleted
+SpacesController --> Server : Return success
+Server --> Client : 200 OK
+
+@enduml

@@ -1,0 +1,62 @@
+@startuml Authentication Sequence
+
+actor Client
+participant "Express Server" as Server
+participant AuthController
+participant AuthMiddleware
+participant "JWT" as JWT
+participant User
+database MongoDB
+
+title Authentication Flow
+
+== Registration ==
+Client -> Server : POST /api/v1/auth/register
+Server -> AuthController : register()
+AuthController -> User : create()
+User -> MongoDB : Save user
+MongoDB --> User : User saved
+User -> JWT : getSignedJwtToken()
+JWT --> User : JWT token
+User --> AuthController : User with token
+AuthController --> Server : Send token response
+Server --> Client : 200 OK with token
+
+== Login ==
+Client -> Server : POST /api/v1/auth/login
+Server -> AuthController : login()
+AuthController -> User : findOne({email})
+User -> MongoDB : Query user
+MongoDB --> User : User record
+User --> AuthController : User found
+AuthController -> User : matchPassword()
+User -> User : Compare passwords
+User --> AuthController : Password matches
+AuthController -> JWT : Generate token
+JWT --> AuthController : JWT token
+AuthController --> Server : Send token response
+Server --> Client : 200 OK with token
+
+== Get Current User ==
+Client -> Server : GET /api/v1/auth/me
+Server -> AuthMiddleware : protect()
+AuthMiddleware -> JWT : Verify token
+JWT --> AuthMiddleware : Decoded token
+AuthMiddleware -> User : findById()
+User -> MongoDB : Query user
+MongoDB --> User : User record
+User --> AuthMiddleware : User found
+AuthMiddleware --> Server : Attach user to request
+Server -> AuthController : me()
+AuthController -> User : Get user from request
+AuthController --> Server : Return user data
+Server --> Client : 200 OK with user data
+
+== Logout ==
+Client -> Server : GET /api/v1/auth/logout
+Server -> AuthController : logout()
+AuthController -> AuthController : Clear cookie
+AuthController --> Server : Return success
+Server --> Client : 200 OK
+
+@enduml

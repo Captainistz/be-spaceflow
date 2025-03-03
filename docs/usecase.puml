@@ -1,0 +1,58 @@
+@startuml SpaceFlow Use Case Diagram
+
+left to right direction
+skinparam linetype ortho
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecaseStyle roundbox
+
+title SpaceFlow - CoWorking Space Reservation System
+
+' Actors
+actor "Unauthorized User" as Visitor
+actor "User" as User
+actor "Admin" as Admin
+
+' Inheritance
+User --|> Visitor
+Admin --|> User
+
+rectangle SpaceFlow {
+  ' Visitor Use Cases
+  usecase "View Spaces" as ViewSpaces
+  usecase "Register Account" as Register
+  usecase "Login" as Login
+  
+  ' User Use Cases
+  usecase "Logout" as Logout
+  usecase "Manage Own Reservations" as ManageOwnReservations
+  
+  ' Admin Use Cases
+  usecase "Manage Spaces" as ManageSpaces
+  usecase "Manage Any Reservation" as ManageAnyReservation
+  
+  ' Visitor associations
+  Visitor ---> ViewSpaces
+  Visitor --> Register
+  Visitor --> Login
+  
+  ' User associations
+  User --> Logout
+  User --> ManageOwnReservations
+  
+  ' Admin associations
+  Admin --> ManageSpaces
+  Admin --> ManageAnyReservation
+
+  ' Note
+  note "Manage = Create/Update/Delete" as Note
+}
+
+
+
+
+
+
+
+@enduml

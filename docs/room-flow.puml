@@ -26,6 +26,7 @@ Server -> RoomsController : getRoom()
 RoomsController -> Space : findById()
 Space -> MongoDB : Query space
 MongoDB --> Space : Space record
+Space --> RoomsController : Space found
 RoomsController -> Space : getRoom()
 Space --> RoomsController : Room data
 RoomsController --> Server : Return room
@@ -41,6 +42,7 @@ Server -> RoomsController : addRoom()
 RoomsController -> Space : findById()
 Space -> MongoDB : Query space
 MongoDB --> Space : Space record
+Space --> RoomsController : Space found
 RoomsController -> Space : rooms.push()
 Space -> MongoDB : Save space with new room
 MongoDB --> Space : Space saved
@@ -57,6 +59,7 @@ Server -> RoomsController : updateRoom()
 RoomsController -> Space : findById()
 Space -> MongoDB : Query space
 MongoDB --> Space : Space record
+Space --> RoomsController : Space found
 RoomsController -> Space : getRoomIdx()
 RoomsController -> Space : Update room fields
 Space -> MongoDB : Save updated space
@@ -70,18 +73,4 @@ Server -> AuthMiddleware : protect()
 AuthMiddleware --> Server : User authenticated
 Server -> AuthMiddleware : authorize('admin')
 AuthMiddleware --> Server : User authorized
-Server -> RoomsController : deleteRoom()
-RoomsController -> Space : findById()
-Space -> MongoDB : Query space
-MongoDB --> Space : Space record
-RoomsController -> Space : getRoomIdx()
-RoomsController -> Reservation : deleteMany({room: id})
-Reservation -> MongoDB : Delete reservations
-MongoDB --> Reservation : Reservations deleted
-RoomsController -> Space : rooms.splice()
-Space -> MongoDB : Save space without room
-MongoDB --> Space : Space saved
-RoomsController --> Server : Return success
-Server --> Client : 200 OK
-
-@enduml
+Server -> RoomsController

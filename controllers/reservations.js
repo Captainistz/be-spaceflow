@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Reservation = require('../models/Reservation')
 const Space = require('../models/Space')
 
@@ -227,32 +228,32 @@ const deleteReservation = async (req, res, next) => {
 }
 
 
-const getReservesByRoom = async (req,res,next) => {
-    const {space_id} = req.params.space_id;
-    const {room_id} = req.params.room_id;
+const getReservesByRoom = async (req, res, next) => {
+  const { space_id, room_id } = req.params; // Correctly destructure the params
 
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
+  const todayStart = Date.now(); // Get the current timestamp
 
-    try {
-      const reservedDate = await Reservation.find({
-        "room" : new mongoose.Types.ObjectId(room_id),
-        "space" :  new mongoose.Types.ObjectId(space_id),
-        "reservationDate": {$gte : todayStart}
-      }).select("reservationDate");
+  try {
+    const reservedDate = await Reservation.find({
+      room: room_id,
+      space: space_id,
+      "reservationDate": { $gte: todayStart }
+    }).select("reservationDate");
 
-      res.status(200).json({
-        success: true,
-        data : reservedDate,
-      })
+    res.status(200).json({
+      success: true,
+      data: reservedDate,
+    });
 
-    } catch (error) {
-      res.status(400).json({
-        success : false,
-        data : {}
-      })
-    }  
-}
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Error fetching reservations', // Add the error message
+      data: {},
+    });
+  }
+};
 
 
 

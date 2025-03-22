@@ -30,20 +30,20 @@ app.use(xss())
 app.use(helmet())
 app.use(hpp())
 
-if (process.env.NODE_ENV !== 'test') {
-  // Protect CSRF
-  app.use(
-    session({
-      secret: process.env.CSRF_SECRET,
-      cookie: {
-        secure: process.env.NODE_ENV === 'production',
-      },
-      resave: false,
-      saveUninitialized: false,
-    })
-  )
-  app.use(csurf())
-}
+// if (process.env.NODE_ENV !== 'test') {
+//   // Protect CSRF
+//   app.use(
+//     session({
+//       secret: process.env.CSRF_SECRET,
+//       cookie: {
+//         secure: process.env.NODE_ENV === 'production',
+//       },
+//       resave: false,
+//       saveUninitialized: false,
+//     })
+//   )
+//   app.use(csurf())
+// }  
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
@@ -68,6 +68,7 @@ app.use(limiter)
 app.use('/api/v1/auth', require('./routes/auth'))
 app.use('/api/v1/spaces', require('./routes/spaces'))
 app.use('/api/v1/reservations', require('./routes/reservations'))
+app.use('/api/v1/getReservationByRoom' , require('./routes/getReservesByRoom'))
 
 // Root endpoint
 app.get('/', (_, res) => {

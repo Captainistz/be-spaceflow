@@ -7,7 +7,6 @@ const {
   getReservation,
   updateReservation,
   deleteReservation,
-  getReservesByRoom,
 } = require('../controllers/reservations.js')
 const router = express.Router({ mergeParams: true })
 
@@ -23,7 +22,5 @@ router.delete(
   deleteReservation
 )
 
-
-router.get('/:room_id',protect,getReservesByRoom);
 
 module.exports = router

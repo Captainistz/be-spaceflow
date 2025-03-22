@@ -34,26 +34,29 @@ const getSpaces = async (req, res, next) => {
       query = query.sort('-createdAt')
     }
 
-    const page = parseInt(req.query.page, 10) || 1
-    const limit = parseInt(req.query.limit, 10) || 25
-    const startIndex = (page - 1) * limit
-    const endIndex = page * limit
-    const total = await Space.countDocuments()
-    query = query.skip(startIndex).limit(limit)
+    
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 25;
+    const total = await Space.countDocuments(JSON.parse(queryString));
+    const totalPages = Math.ceil(total / limit);
+    const startIndex = (page - 1) * limit;
 
-    const pagination = {}
-    if (endIndex < total) {
-      pagination.next = {
-        page: page + 1,
-        limit,
-      }
+    query = query.skip(startIndex).limit(limit);
+
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+
+    if (page < totalPages) {
+      pagination.next = { page: page + 1, limit };
     }
-
-    if (startIndex > 0) {
-      pagination.prev = {
-        page: page - 1,
-        limit,
-      }
+    if (page > 1) {
+      pagination.prev = { page: page - 1, limit };
     }
 
     const spaces = await query

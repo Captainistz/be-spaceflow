@@ -9,6 +9,10 @@ const RoomSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please add a capacity'],
   },
+  price:{
+    type : Number,
+    required : [true , 'Please add a price']
+  },  
   facilities: {
     type: [String],
     default: [],

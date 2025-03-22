@@ -43,6 +43,7 @@ const getSpaces = async (req, res, next) => {
 
     query = query.skip(startIndex).limit(limit);
 
+    
     const pagination = {
       total,
       page,
@@ -52,6 +53,7 @@ const getSpaces = async (req, res, next) => {
       hasPrevPage: page > 1,
     };
 
+    
     if (page < totalPages) {
       pagination.next = { page: page + 1, limit };
     }
@@ -60,12 +62,16 @@ const getSpaces = async (req, res, next) => {
     }
 
     const spaces = await query
+    const spacesPagination = {
+      spaces : spaces,
+      pagination : pagination,
+    }
+
 
     res.status(200).json({
       success: true,
-      count: spaces.length,
-      pagination: pagination,
-      data: spaces,
+      data : spacesPagination,
+      //count: spaces.length,
     })
   } catch (err) {
     next(err)

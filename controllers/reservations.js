@@ -226,10 +226,41 @@ const deleteReservation = async (req, res, next) => {
   }
 }
 
+
+const getReservesByRoom = async (req,res,next) => {
+    const {space_id} = req.params.space_id;
+    const {room_id} = req.params.room_id;
+
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    try {
+      const reservedDate = await Reservation.find({
+        "room" : new mongoose.Types.ObjectId(room_id),
+        "space" :  new mongoose.Types.ObjectId(space_id),
+        "reservationDate": {$gte : todayStart}
+      }).select("reservationDate");
+
+      res.status(200).json({
+        success: true,
+        data : reservedDate,
+      })
+
+    } catch (error) {
+      res.status(400).json({
+        success : false,
+        data : {}
+      })
+    }  
+}
+
+
+
 module.exports = {
   getReservations,
   addReservation,
   getReservation,
   updateReservation,
   deleteReservation,
+  getReservesByRoom,
 }

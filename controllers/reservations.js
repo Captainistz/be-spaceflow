@@ -6,29 +6,41 @@ const Space = require('../models/Space')
 // @route  GET /api/v1/reservations
 // @access Public
 const getReservations = async (req, res, next) => {
-  // TODO : Populate room details to response
-  let query = { user: req.user.id }
+  let query = { user: req.user.id };
 
   if (req.user.role === 'admin') {
-    query = {}
-    if (req.params.space_id) {
-      query = { space: req.params.space_id }
-    }
+    query = req.params.space_id ? { space: req.params.space_id } : {};
   }
 
   try {
     const reservations = await Reservation.find(query).populate({
       path: 'space',
-      select: 'name province tel',
-    })
+      select: 'name province tel rooms', 
+    });
+
+    const modifiedReservations = reservations.map(reservation => {
+     
+      if (!reservation.space || !reservation.space.rooms) {
+        return { ...reservation.toObject(), room: null };
+      }
+
+      const roomDetails = reservation.space.rooms.find(
+        room => room._id.toString() === reservation.room.toString()
+      );
+
+      return {
+        ...reservation.toObject(),
+        room: roomDetails || null, 
+      };
+    });
 
     res.status(200).json({
       success: true,
-      count: reservations.length,
-      data: reservations,
-    })
+      count: modifiedReservations.length,
+      data: modifiedReservations,
+    });
   } catch (e) {
-    next(e)
+    next(e);
   }
 }
 

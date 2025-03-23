@@ -52,16 +52,27 @@ const getReservation = async (req, res, next) => {
   try {
     const reservation = await Reservation.findById(id).populate({
       path: 'space',
-      select: 'name province tel',
+      select: 'name province tel rooms',
     })
 
     if (!reservation) {
       throw new Error('Not found')
     }
 
+
+    const roomWithDetails = reservation.space.rooms.find(
+      room => room._id.toString() === reservation.room.toString()
+    )
+
+
+    const modifiedReservations = {
+      ...reservation.toObject(),
+      room : roomWithDetails
+    }
+
     res.status(200).json({
       success: true,
-      data: reservation,
+      data: modifiedReservations,
     })
   } catch (e) {
     if (e.name == 'CastError' || e.message == 'Not found') {

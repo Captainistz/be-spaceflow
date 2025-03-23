@@ -28,8 +28,12 @@ const getReservations = async (req, res, next) => {
         room => room._id.toString() === reservation.room.toString()
       );
 
+      const modifiedSpace = JSON.parse(JSON.stringify(reservation.space));
+      delete modifiedSpace.rooms;
+
       return {
         ...reservation.toObject(),
+        space : modifiedSpace,
         room: roomDetails || null, 
       };
     });
@@ -59,6 +63,8 @@ const getReservation = async (req, res, next) => {
       throw new Error('Not found')
     }
 
+    const modifiedSpace = JSON.parse(JSON.stringify(reservation.space));
+    delete modifiedSpace.rooms;
 
     const roomWithDetails = reservation.space.rooms.find(
       room => room._id.toString() === reservation.room.toString()
@@ -67,7 +73,8 @@ const getReservation = async (req, res, next) => {
 
     const modifiedReservations = {
       ...reservation.toObject(),
-      room : roomWithDetails
+      space : modifiedSpace,
+      room : roomWithDetails,
     }
 
     res.status(200).json({

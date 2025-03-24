@@ -17,6 +17,10 @@ const RoomSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  img:{
+    type: String,
+    default : "/placehold.jpg",
+  },
 })
 
 const SpaceSchema = new mongoose.Schema({
@@ -67,6 +71,10 @@ const SpaceSchema = new mongoose.Schema({
   rooms: {
     type: [RoomSchema],
     required: [true, 'Please add a list of rooms'],
+  },
+  img:{
+    type: String,
+    default : "/placehold.jpg",
   },
 })
 

@@ -78,6 +78,7 @@ const SpaceSchema = new mongoose.Schema({
   },
 })
 
+
 SpaceSchema.index({ 'rooms.roomNumber': 1 }, { unique: true })
 
 SpaceSchema.path('rooms').validate(function (rooms) {

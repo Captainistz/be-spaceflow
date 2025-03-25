@@ -32,12 +32,24 @@ app.use(xss())
 app.use(helmet())
 app.use(hpp())
 
+// Logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
+if (process.env.NODE_ENV !== 'test') {
+  app.use(
+    morgan('common', {
+      stream: fs.createWriteStream('./logs/access.log', { flags: 'a' }),
+    })
+  )
+}
+
 // Rate limit
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 100,
-  limit: 100,
-})
-app.use(limiter)
+// const limiter = rateLimit({
+//   windowMs: 10 * 60 * 100,
+//   limit: 100,
+// })
+// app.use(limiter)
 
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'))

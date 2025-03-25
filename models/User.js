@@ -35,6 +35,9 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  img: {
+    type: String,
+  },
 })
 
 UserSchema.pre('save', async function () {

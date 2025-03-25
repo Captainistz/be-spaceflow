@@ -9,17 +9,17 @@ const RoomSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please add a capacity'],
   },
-  price:{
-    type : Number,
-    required : [true , 'Please add a price']
-  },  
+  price: {
+    type: Number,
+    required: [true, 'Please add a price'],
+  },
   facilities: {
     type: [String],
     default: [],
   },
-  image:{
+  image: {
     type: String,
-    default : "/placehold.jpg",
+    default: '/placehold.jpg',
   },
 })
 
@@ -72,12 +72,11 @@ const SpaceSchema = new mongoose.Schema({
     type: [RoomSchema],
     required: [true, 'Please add a list of rooms'],
   },
-  image:{
+  image: {
     type: String,
-    default : "/placehold.jpg",
+    default: '/placehold.jpg',
   },
 })
-
 
 SpaceSchema.index({ 'rooms.roomNumber': 1 }, { unique: true })
 

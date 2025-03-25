@@ -13,10 +13,21 @@ const sendTokenResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === 'production') {
     options.secure = true
   }
-  res.status(statusCode).cookie('token', token, options).json({
-    success: true,
-    token: token,
-  })
+  res
+    .status(statusCode)
+    .cookie('token', token, options)
+    .json({
+      success: true,
+      data: {
+        token: token,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        image: user.img,
+      },
+    })
 }
 
 // @desc   Register user

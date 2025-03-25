@@ -6,44 +6,46 @@ const Reservation = require('../models/Reservation.js')
 // @access Public
 const getSpaces = async (req, res, next) => {
   try {
-    let query
-
+    // Build filter query
     const reqQuery = { ...req.query }
     const removeFields = ['select', 'sort', 'page', 'limit']
     removeFields.forEach((param) => delete reqQuery[param])
 
+    // Create query string with MongoDB operators
     let queryString = JSON.stringify(reqQuery)
     queryString = queryString.replace(
       /\b(gt|gte|lt|lte|in)\b/g,
       (match) => `$${match}`
     )
+    const parsedQuery = JSON.parse(queryString)
 
-    query = Space.find(JSON.parse(queryString)).populate('reservations')
+    // Prepare base query
+    let query = Space.find(parsedQuery)
 
-    const select = req.query.select
-    if (select && typeof select === 'string') {
-      const fields = select.split(',').join(' ')
-      query = query.select(fields)
+    // Handle select fields
+    if (req.query.select) {
+      query = query.select(req.query.select.split(',').join(' '))
     }
 
-    const sort = req.query.sort
-    if (sort && typeof sort === 'string') {
-      const sortBy = sort.split(',').join(' ')
-      query = query.sort(sortBy)
-    } else {
-      query = query.sort('-createdAt')
-    }
+    // Handle sorting
+    // const sortBy = req.query.sort
+    //   ? req.query.sort.split(',').join(' ')
+    //   : 'name'
+    // query = query.sort(sortBy)
 
-    
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 25;
-    const total = await Space.countDocuments(JSON.parse(queryString));
-    const totalPages = Math.ceil(total / limit);
-    const startIndex = (page - 1) * limit;
+    // Pagination
+    const page = parseInt(req.query.page, 10) || 1
+    const limit = parseInt(req.query.limit, 10) || 6
+    const startIndex = (page - 1) * limit
 
-    query = query.skip(startIndex).limit(limit);
+    // Execute queries in parallel
+    const [total, spaces] = await Promise.all([
+      Space.countDocuments(parsedQuery),
+      query.skip(startIndex).limit(limit).populate('reservations'),
+    ])
 
-    
+    // Build pagination object
+    const totalPages = Math.ceil(total / limit)
     const pagination = {
       total,
       page,
@@ -51,27 +53,14 @@ const getSpaces = async (req, res, next) => {
       totalPages,
       hasNextPage: page < totalPages,
       hasPrevPage: page > 1,
-    };
-
-    
-    if (page < totalPages) {
-      pagination.next = { page: page + 1, limit };
     }
-    if (page > 1) {
-      pagination.prev = { page: page - 1, limit };
-    }
-
-    const spaces = await query
-    const spacesPagination = {
-      spaces : spaces,
-      pagination : pagination,
-    }
-
 
     res.status(200).json({
       success: true,
-      data : spacesPagination,
-      //count: spaces.length,
+      data: {
+        spaces,
+        pagination,
+      },
     })
   } catch (err) {
     next(err)

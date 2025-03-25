@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const Reservation = require('../models/Reservation')
 const Space = require('../models/Space')
 
@@ -6,44 +6,72 @@ const Space = require('../models/Space')
 // @route  GET /api/v1/reservations
 // @access Public
 const getReservations = async (req, res, next) => {
-  let query = { user: req.user.id };
+  let queryParams = { user: req.user.id }
+
+  const reqQuery = { ...req.query }
+  const removeFields = ['select', 'sort', 'page', 'limit']
+  removeFields.forEach((param) => delete reqQuery[param])
 
   if (req.user.role === 'admin') {
-    query = req.params.space_id ? { space: req.params.space_id } : {};
+    queryParams = req.params.space_id ? { space: req.params.space_id } : {}
   }
 
-  try {
-    const reservations = await Reservation.find(query).populate({
-      path: 'space',
-      select: 'name province tel rooms', 
-    });
+  let query = Reservation.find(queryParams)
 
-    const modifiedReservations = reservations.map(reservation => {
-     
+  // Handle sorting
+  var sortBy = req.query.sort
+
+  switch (sortBy) {
+    case 'date-asc':
+      sortBy = '+reservationDate'
+      break
+    case 'date-desc':
+      sortBy = '-reservationDate'
+      break
+    case 'price-asc':
+      sortBy = '+price'
+      break
+    case 'price-desc':
+      sortBy = '-price'
+      break
+    default:
+      sortBy = '+reservationDate'
+      break
+  }
+
+  query = query.sort(sortBy)
+
+  try {
+    const reservations = await query.populate({
+      path: 'space',
+      select: 'name province tel rooms',
+    })
+
+    const modifiedReservations = reservations.map((reservation) => {
       if (!reservation.space || !reservation.space.rooms) {
-        return { ...reservation.toObject(), room: null };
+        return { ...reservation.toObject(), room: null }
       }
 
       const roomDetails = reservation.space.rooms.find(
-        room => room._id.toString() === reservation.room.toString()
-      );
+        (room) => room._id.toString() === reservation.room.toString()
+      )
 
-      const modifiedSpace = JSON.parse(JSON.stringify(reservation.space));
-      delete modifiedSpace.rooms;
+      const modifiedSpace = JSON.parse(JSON.stringify(reservation.space))
+      delete modifiedSpace.rooms
 
       return {
         ...reservation.toObject(),
-        space : modifiedSpace,
-        room: roomDetails || null, 
-      };
-    });
+        space: modifiedSpace,
+        room: roomDetails || null,
+      }
+    })
 
     res.status(200).json({
       success: true,
       data: modifiedReservations,
-    });
+    })
   } catch (e) {
-    next(e);
+    next(e)
   }
 }
 
@@ -62,18 +90,17 @@ const getReservation = async (req, res, next) => {
       throw new Error('Not found')
     }
 
-    const modifiedSpace = JSON.parse(JSON.stringify(reservation.space));
-    delete modifiedSpace.rooms;
+    const modifiedSpace = JSON.parse(JSON.stringify(reservation.space))
+    delete modifiedSpace.rooms
 
     const roomWithDetails = reservation.space.rooms.find(
-      room => room._id.toString() === reservation.room.toString()
+      (room) => room._id.toString() === reservation.room.toString()
     )
-
 
     const modifiedReservations = {
       ...reservation.toObject(),
-      space : modifiedSpace,
-      room : roomWithDetails,
+      space: modifiedSpace,
+      room: roomWithDetails,
     }
 
     res.status(200).json({
@@ -256,35 +283,31 @@ const deleteReservation = async (req, res, next) => {
   }
 }
 
-
 const getReservesByRoom = async (req, res, next) => {
-  const { space_id, room_id } = req.params; // Correctly destructure the params
+  const { space_id, id } = req.params // Correctly destructure the params
 
-  const todayStart = Date.now(); // Get the current timestamp
+  const todayStart = Date.now() // Get the current timestamp
 
   try {
-    const reservedDate = await Reservation.find({
-      room: room_id,
+    const reservations = await Reservation.find({
+      room: id,
       space: space_id,
-      "reservationDate": { $gte: todayStart }
-    }).select("reservationDate");
+      reservationDate: { $gte: todayStart },
+    }).select('reservationDate -_id')
+
+    // Extract and flatten the reservationDate values into a single array
+    const reservedDate = reservations.map(
+      (reservation) => reservation.reservationDate
+    )
 
     res.status(200).json({
       success: true,
       data: reservedDate,
-    });
-
+    })
   } catch (error) {
-    console.error(error); // Log the error for debugging
-    res.status(400).json({
-      success: false,
-      message: error.message || 'Error fetching reservations', // Add the error message
-      data: {},
-    });
+    next(error)
   }
-};
-
-
+}
 
 module.exports = {
   getReservations,

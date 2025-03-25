@@ -42,10 +42,16 @@ const getReservations = async (req, res, next) => {
   query = query.sort(sortBy)
 
   try {
-    const reservations = await query.populate({
-      path: 'space',
-      select: 'name province tel rooms',
-    })
+    const reservations = await query.populate([
+      {
+        path: 'space',
+        select: 'name province tel rooms',
+      },
+      {
+        path: 'user',
+        select: 'name',
+      },
+    ])
 
     const modifiedReservations = reservations.map((reservation) => {
       if (!reservation.space || !reservation.space.rooms) {

@@ -12,14 +12,22 @@ const getReservations = async (req, res, next) => {
     query = req.params.space_id ? { space: req.params.space_id } : {};
   }
 
+  // Pagination settings
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+
   try {
-    const reservations = await Reservation.find(query).populate({
-      path: 'space',
-      select: 'name province tel rooms', 
-    });
+    const total = await Reservation.countDocuments(query); // Count total reservations
+    const reservations = await Reservation.find(query)
+      .populate({
+        path: 'space',
+        select: 'name province tel rooms',
+      })
+      .skip(skip)
+      .limit(limit);
 
     const modifiedReservations = reservations.map(reservation => {
-     
       if (!reservation.space || !reservation.space.rooms) {
         return { ...reservation.toObject(), room: null };
       }
@@ -33,20 +41,37 @@ const getReservations = async (req, res, next) => {
 
       return {
         ...reservation.toObject(),
-        space : modifiedSpace,
-        room: roomDetails || null, 
+        space: modifiedSpace,
+        room: roomDetails || null,
       };
     });
 
+
+    const totalPages = Math.ceil(total / limit);
+
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+
+    const data = {
+      reservations : modifiedReservations,
+      pagination : pagination,
+    }
+
     res.status(200).json({
       success: true,
-      count: modifiedReservations.length,
-      data: modifiedReservations,
+      data : data
     });
   } catch (e) {
     next(e);
   }
-}
+};
+
 
 // @desc   Get reservation by id
 // @route  GET /api/v1/reservations/:id

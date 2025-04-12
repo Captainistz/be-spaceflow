@@ -1,5 +1,8 @@
 [
   {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a201"
+    },
     "name": "The Hive Thonglor",
     "address": "46/9 Sukhumvit 49",
     "district": "Watthana",
@@ -8,29 +11,55 @@
     "tel": "02-662-6062",
     "opentime": "0900",
     "closetime": "2100",
+    "image": "/the-hive-thonglor.jpg",
     "rooms": [
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a101"
+        },
         "roomNumber": "101",
+        "price": 450,
         "capacity": 4,
-        "facilities": [
-          "Whiteboard",
-          "TV Screen",
-          "WiFi"
-        ]
+        "facilities": ["Whiteboard", "TV Screen", "WiFi"],
+        "image": "/the-hive-thonglor-101.jpg"
       },
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a102"
+        },
         "roomNumber": "102",
+        "price": 300,
         "capacity": 8,
         "facilities": [
           "Projector",
           "Conference Phone",
           "WiFi",
           "Coffee Machine"
-        ]
+        ],
+        "image": "/the-hive-thonglor-102.jpg"
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a199"
+        },
+        "roomNumber": "103",
+        "price": 200,
+        "capacity": 6,
+        "facilities": [
+          "Projector",
+          "Conference Phone",
+          "WiFi",
+          "Coffee Machine",
+          "LAN Cable"
+        ],
+        "image": "/the-hive-thonglor-103.jpg"
       }
     ]
   },
   {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a202"
+    },
     "name": "WeWork T-One Building",
     "address": "8 Sukhumvit 40",
     "district": "Khlong Toei",
@@ -39,353 +68,716 @@
     "tel": "02-234-5678",
     "opentime": "0800",
     "closetime": "2200",
+    "image": "/wework-t-one-building.jpg",
     "rooms": [
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a103"
+        },
         "roomNumber": "201",
+        "price": 450,
         "capacity": 6,
-        "facilities": [
-          "Smart TV",
-          "WiFi",
-          "Standing Desk"
-        ]
-      },
-      {
-        "roomNumber": "202",
-        "capacity": 12,
-        "facilities": [
-          "Projector",
-          "Video Conference System",
-          "WiFi"
-        ]
+        "facilities": ["Smart TV", "WiFi", "Standing Desk"],
+        "image": "/wework-t-one-building-201.jpg"
       }
     ]
   },
   {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a203"
+    },
     "name": "Spaces Chamchuri Square",
-    "address": "319 Phayathai Rd",
-    "district": "Pathumwan",
+    "address": "319 Phayathai Road",
+    "district": "Pathum Wan",
     "province": "Bangkok",
     "postalcode": "10330",
-    "tel": "02-160-0000",
-    "opentime": "0700",
-    "closetime": "2300",
+    "tel": "02-160-0808",
+    "opentime": "0830",
+    "closetime": "2000",
+    "image": "/spaces-chamchuri-square.jpg",
     "rooms": [
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a105"
+        },
         "roomNumber": "301",
-        "capacity": 4,
+        "price": 450,
+        "capacity": 5,
         "facilities": [
           "Whiteboard",
-          "WiFi"
-        ]
+          "HDMI Connection",
+          "WiFi",
+          "Water Dispenser"
+        ],
+        "image": "/spaces-chamchuri-square-301.jpg"
       },
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a106"
+        },
         "roomNumber": "302",
+        "price": 450,
         "capacity": 10,
         "facilities": [
           "Projector",
           "Sound System",
           "WiFi",
-          "Printer"
-        ]
+          "Adjustable Lighting"
+        ],
+        "image": "/spaces-chamchuri-square-302.jpg"
       }
     ]
   },
   {
-    "name": "JustCo @ AIA Sathorn Tower",
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a204"
+    },
+    "name": "JustCo at AIA Sathorn Tower",
     "address": "11/1 South Sathorn Road",
     "district": "Sathorn",
     "province": "Bangkok",
     "postalcode": "10120",
-    "tel": "02-119-9100",
+    "tel": "02-119-7999",
     "opentime": "0800",
-    "closetime": "2000",
-    "rooms": [
-      {
-        "roomNumber": "401",
-        "capacity": 6,
-        "facilities": [
-          "Smart Board",
-          "WiFi",
-          "Apple TV"
-        ]
-      },
-      {
-        "roomNumber": "402",
-        "capacity": 15,
-        "facilities": [
-          "Projector",
-          "Sound System",
-          "Video Conferencing"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "Regus Central World",
-    "address": "999/9 Rama 1 Road",
-    "district": "Pathumwan",
-    "province": "Bangkok",
-    "postalcode": "10330",
-    "tel": "02-646-9999",
-    "opentime": "0730",
+    "image": "/justco-at-aia-sathorn-tower.jpg",
     "closetime": "2100",
     "rooms": [
       {
-        "roomNumber": "501",
-        "capacity": 8,
-        "facilities": [
-          "Whiteboard",
-          "WiFi",
-          "Coffee Bar"
-        ]
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a107"
+        },
+        "roomNumber": "401",
+        "price": 450,
+        "capacity": 4,
+        "facilities": ["Smart Board", "WiFi", "Phone Booth"],
+        "image": "/justco-at-aia-sathorn-tower-401.jpg"
       },
       {
-        "roomNumber": "502",
-        "capacity": 20,
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a108"
+        },
+        "roomNumber": "402",
+        "price": 450,
+        "capacity": 15,
         "facilities": [
           "Dual Projectors",
-          "Conference System",
-          "Catering"
-        ]
+          "Conference Call Equipment",
+          "WiFi",
+          "Catering Service"
+        ],
+        "image": "/justco-at-aia-sathorn-tower-402.jpg"
       }
     ]
   },
   {
-    "name": "True Digital Park",
-    "address": "101 Sukhumvit Road",
-    "district": "Phra Khanong",
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a205"
+    },
+    "name": "Regus Empire Tower",
+    "address": "195 South Sathorn Road",
+    "district": "Sathorn",
     "province": "Bangkok",
-    "postalcode": "10260",
-    "tel": "02-119-7100",
-    "opentime": "0700",
-    "closetime": "2200",
+    "postalcode": "10120",
+    "tel": "02-670-1777",
+    "opentime": "0830",
+    "closetime": "1800",
+    "image": "/regus-empire-tower.jpg",
     "rooms": [
       {
-        "roomNumber": "601",
-        "capacity": 10,
-        "facilities": [
-          "Interactive Display",
-          "5G WiFi",
-          "Gaming Chairs"
-        ]
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a109"
+        },
+        "roomNumber": "501",
+        "price": 450,
+        "capacity": 3,
+        "facilities": ["Monitor", "WiFi", "Printer Access"],
+        "image": "/regus-empire-tower-501.jpg"
       },
       {
-        "roomNumber": "602",
-        "capacity": 30,
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a110"
+        },
+        "roomNumber": "502",
+        "price": 450,
+        "capacity": 8,
         "facilities": [
-          "Stage",
-          "Professional Audio",
-          "Live Streaming Equipment"
-        ]
+          "Interactive Display",
+          "WiFi",
+          "Air Purifier",
+          "Ergonomic Chairs"
+        ],
+        "image": "/regus-empire-tower-502.jpg"
       }
     ]
   },
   {
-    "name": "Hubba Ekkamai",
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a206"
+    },
+    "name": "The Work Loft",
+    "address": "281/19-23 Silom Road",
+    "district": "Bang Rak",
+    "province": "Bangkok",
+    "postalcode": "10500",
+    "tel": "02-103-2099",
+    "opentime": "0900",
+    "closetime": "2200",
+    "image": "/the-work-loft.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a111"
+        },
+        "roomNumber": "601",
+        "price": 450,
+        "capacity": 6,
+        "facilities": ["Whiteboard", "LCD Screen", "WiFi", "Bluetooth Speaker"],
+        "image": "/the-work-loft-601.jpg"
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a112"
+        },
+        "roomNumber": "602",
+        "price": 450,
+        "capacity": 10,
+        "facilities": ["Projector", "Surround Sound", "WiFi", "Refreshments"],
+        "image": "/the-work-loft-602.jpg"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a207"
+    },
+    "name": "HUBBA Ekkamai",
     "address": "19 Ekkamai Soi 4",
     "district": "Watthana",
     "province": "Bangkok",
     "postalcode": "10110",
     "tel": "02-714-3388",
-    "opentime": "0900",
-    "closetime": "2000",
+    "opentime": "0830",
+    "closetime": "1830",
+    "image": "/hubba-ekkamai.jpg",
     "rooms": [
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a113"
+        },
         "roomNumber": "701",
-        "capacity": 4,
+        "price": 450,
+        "capacity": 8,
         "facilities": [
           "Whiteboard",
+          "TV Screen",
           "WiFi",
-          "Garden View"
+          "Outdoor Patio Access"
         ]
       },
       {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a114"
+        },
         "roomNumber": "702",
+        "price": 450,
+        "capacity": 15,
+        "facilities": ["Projector", "Sound System", "WiFi", "Garden View"]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a208"
+    },
+    "name": "The Great Room Gaysorn Tower",
+    "address": "127 Ratchadamri Road",
+    "district": "Pathum Wan",
+    "province": "Bangkok",
+    "postalcode": "10330",
+    "tel": "02-073-0202",
+    "opentime": "0800",
+    "closetime": "2000",
+    "image": "/the-great-room-gaysorn-tower.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a115"
+        },
+        "roomNumber": "801",
+        "price": 450,
+        "capacity": 4,
+        "facilities": ["Smart TV", "WiFi", "Espresso Machine"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a116"
+        },
+        "roomNumber": "802",
+        "price": 450,
+        "capacity": 12,
+        "facilities": [
+          "Digital Whiteboard",
+          "Video Conferencing",
+          "WiFi",
+          "City View"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a209"
+    },
+    "name": "Launchpad Bangkok",
+    "address": "139 Pan Road",
+    "district": "Silom",
+    "province": "Bangkok",
+    "postalcode": "10500",
+    "tel": "02-233-4430",
+    "opentime": "0900",
+    "closetime": "1800",
+    "image": "/launchpad-bangkok.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a117"
+        },
+        "roomNumber": "901",
+        "price": 450,
+        "capacity": 5,
+        "facilities": ["Whiteboard", "Monitor", "WiFi", "Printer"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a118"
+        },
+        "roomNumber": "902",
+        "price": 450,
+        "capacity": 10,
+        "facilities": [
+          "Projector",
+          "Conference Call System",
+          "WiFi",
+          "Snack Bar"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a210"
+    },
+    "name": "Draft Board",
+    "address": "26 Soi Supapong 1",
+    "district": "Yannawa",
+    "province": "Bangkok",
+    "postalcode": "10120",
+    "tel": "02-210-0086",
+    "opentime": "0900",
+    "closetime": "2100",
+    "image": "/draft-board.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a119"
+        },
+        "roomNumber": "1001",
+        "price": 450,
+        "capacity": 7,
+        "facilities": ["Writable Walls", "TV Screen", "WiFi", "Coffee Bar"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a120"
+        },
+        "roomNumber": "1002",
+        "price": 450,
+        "capacity": 14,
+        "facilities": ["Projector", "Audio System", "WiFi", "Terrace Access"]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a211"
+    },
+    "name": "Glowfish Sathorn",
+    "address": "92/4 North Sathorn Road",
+    "district": "Silom",
+    "province": "Bangkok",
+    "postalcode": "10500",
+    "tel": "02-109-9600",
+    "opentime": "0800",
+    "closetime": "2000",
+    "image": "/glowfish-sathorn.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a121"
+        },
+        "roomNumber": "1101",
+        "price": 450,
+        "capacity": 6,
+        "facilities": ["Smart TV", "WiFi", "Wireless Charging Stations"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a122"
+        },
+        "roomNumber": "1102",
+        "price": 450,
+        "capacity": 16,
+        "facilities": [
+          "Dual Screens",
+          "Video Conference System",
+          "WiFi",
+          "Adjustable Lighting"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a212"
+    },
+    "name": "Busy Bees Sukhumvit",
+    "address": "253 Sukhumvit 21",
+    "district": "Watthana",
+    "province": "Bangkok",
+    "postalcode": "10110",
+    "tel": "02-000-1235",
+    "opentime": "0830",
+    "closetime": "1930",
+    "image": "/busy-bees-sukhumvit.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a123"
+        },
+        "roomNumber": "1201",
+        "price": 450,
+        "capacity": 5,
+        "facilities": ["Digital Whiteboard", "WiFi", "Standing Desks"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a124"
+        },
+        "roomNumber": "1202",
+        "price": 450,
+        "capacity": 10,
+        "facilities": [
+          "Projector",
+          "Bluetooth Sound System",
+          "WiFi",
+          "Refreshment Corner"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a213"
+    },
+    "name": "The Paperwork Phrom Phong",
+    "address": "31 Sukhumvit 49",
+    "district": "Watthana",
+    "province": "Bangkok",
+    "postalcode": "10110",
+    "tel": "02-662-7396",
+    "opentime": "0900",
+    "closetime": "2000",
+    "image": "/the-paperwork-phrom-phong.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a125"
+        },
+        "roomNumber": "1301",
+        "price": 450,
+        "capacity": 8,
+        "facilities": ["TV Screen", "WiFi", "Whiteboard Wall", "Green Corner"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a126"
+        },
+        "roomNumber": "1302",
+        "price": 450,
+        "capacity": 14,
+        "facilities": ["Projector", "Conference Phone", "WiFi", "Lounge Area"]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a214"
+    },
+    "name": "Cluster Office Asoke",
+    "address": "33/2 Sukhumvit 21",
+    "district": "Watthana",
+    "province": "Bangkok",
+    "postalcode": "10110",
+    "tel": "02-258-1158",
+    "opentime": "0800",
+    "closetime": "2100",
+    "image": "/cluster-office-asoke.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a127"
+        },
+        "roomNumber": "1401",
+        "price": 450,
+        "capacity": 6,
+        "facilities": ["Interactive Display", "WiFi", "Pod Seating"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a128"
+        },
+        "roomNumber": "1402",
+        "price": 450,
+        "capacity": 12,
+        "facilities": [
+          "Dual Projectors",
+          "Sound System",
+          "WiFi",
+          "Refreshment Station"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a215"
+    },
+    "name": "River City Co-Create",
+    "address": "23 Charoen Krung Soi 24",
+    "district": "Sampantawong",
+    "province": "Bangkok",
+    "postalcode": "10100",
+    "tel": "02-237-0077",
+    "opentime": "0900",
+    "closetime": "1900",
+    "image": "/river-city-co-create.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a129"
+        },
+        "roomNumber": "1501",
+        "price": 450,
+        "capacity": 5,
+        "facilities": ["Whiteboard", "TV Screen", "WiFi", "River View"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a130"
+        },
+        "roomNumber": "1502",
+        "price": 450,
+        "capacity": 10,
+        "facilities": [
+          "Projector",
+          "Conference Call Equipment",
+          "WiFi",
+          "Art Corner"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a216"
+    },
+    "name": "Hubba Silom",
+    "address": "29 Silom Road",
+    "district": "Bang Rak",
+    "province": "Bangkok",
+    "postalcode": "10500",
+    "tel": "02-233-4499",
+    "opentime": "0830",
+    "closetime": "2030",
+    "image": "/hubba-silom.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a131"
+        },
+        "roomNumber": "1601",
+        "price": 450,
+        "capacity": 7,
+        "facilities": ["Smart TV", "WiFi", "Modular Furniture"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a132"
+        },
+        "roomNumber": "1602",
+        "price": 450,
+        "capacity": 14,
+        "facilities": [
+          "Projector",
+          "Sound System",
+          "WiFi",
+          "Collaborative Tools"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a217"
+    },
+    "name": "Spaces Summer Hill",
+    "address": "1106 Sukhumvit Road",
+    "district": "Phra Khanong",
+    "province": "Bangkok",
+    "postalcode": "10110",
+    "tel": "02-048-6000",
+    "opentime": "0800",
+    "closetime": "2000",
+    "image": "/spaces-summer-hill.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a133"
+        },
+        "roomNumber": "1701",
+        "price": 450,
+        "capacity": 6,
+        "facilities": ["Digital Display", "WiFi", "Quiet Zone"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a134"
+        },
+        "roomNumber": "1702",
+        "price": 450,
+        "capacity": 12,
+        "facilities": [
+          "Projection Screen",
+          "Conference System",
+          "WiFi",
+          "Garden Access"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a218"
+    },
+    "name": "WeWork Spring Tower",
+    "address": "87 Wireless Road",
+    "district": "Lumpini",
+    "province": "Bangkok",
+    "postalcode": "10330",
+    "tel": "02-267-8888",
+    "opentime": "0800",
+    "closetime": "2200",
+    "image": "/wework-sprint-tower.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a135"
+        },
+        "roomNumber": "1801",
+        "price": 450,
+        "capacity": 8,
+        "facilities": ["Interactive Board", "WiFi", "Wellness Corner"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a136"
+        },
+        "roomNumber": "1802",
+        "price": 450,
+        "capacity": 16,
+        "facilities": [
+          "Dual Display Screens",
+          "Acoustic Panels",
+          "WiFi",
+          "Premium Coffee Service"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a219"
+    },
+    "name": "The Hive Prakanong",
+    "address": "46 Sukhumvit 71",
+    "district": "Wattana",
+    "province": "Bangkok",
+    "postalcode": "10110",
+    "tel": "02-002-5188",
+    "opentime": "0830",
+    "closetime": "2100",
+    "image": "/the-hive-prakanong.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a137"
+        },
+        "roomNumber": "1901",
+        "price": 450,
+        "capacity": 5,
+        "facilities": ["Whiteboard", "TV Monitor", "WiFi", "Ergonomic Seating"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a138"
+        },
+        "roomNumber": "1902",
+        "price": 450,
+        "capacity": 10,
+        "facilities": [
+          "Projector",
+          "Conference System",
+          "WiFi",
+          "Refreshment Bar"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6570f10a5df9e76553e6a220"
+    },
+    "name": "Regus Q House Lumpini",
+    "address": "1 South Sathorn Road",
+    "district": "Sathorn",
+    "province": "Bangkok",
+    "postalcode": "10120",
+    "tel": "02-677-7186",
+    "opentime": "0830",
+    "closetime": "1800",
+    "image": "/regus-q-house-lumpini.jpg",
+    "rooms": [
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a139"
+        },
+        "roomNumber": "2001",
+        "price": 450,
+        "capacity": 4,
+        "facilities": ["Smart Display", "WiFi", "Wireless Charging"]
+      },
+      {
+        "_id": {
+          "$oid": "6570f10a5df9e76553e6a140"
+        },
+        "roomNumber": "2002",
+        "price": 450,
         "capacity": 12,
         "facilities": [
           "Projector",
-          "Podcast Equipment",
-          "Lounge Area"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "Draft Board Ratchada",
-    "address": "231 Ratchadaphisek Road",
-    "district": "Din Daeng",
-    "province": "Bangkok",
-    "postalcode": "10400",
-    "tel": "02-642-5555",
-    "opentime": "0830",
-    "closetime": "2030",
-    "rooms": [
-      {
-        "roomNumber": "801",
-        "capacity": 6,
-        "facilities": [
-          "Smart TV",
+          "Video Conference Setup",
           "WiFi",
-          "Phone Booth"
-        ]
-      },
-      {
-        "roomNumber": "802",
-        "capacity": 16,
-        "facilities": [
-          "Projector",
-          "Recording Studio",
-          "Break Room"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "The Great Room Gaysorn",
-    "address": "127 Ratchadamri Road",
-    "district": "Pathumwan",
-    "province": "Bangkok",
-    "postalcode": "10330",
-    "tel": "02-253-9888",
-    "opentime": "0800",
-    "closetime": "2100",
-    "rooms": [
-      {
-        "roomNumber": "901",
-        "capacity": 8,
-        "facilities": [
-          "Designer Furniture",
-          "WiFi",
-          "Barista Bar"
-        ]
-      },
-      {
-        "roomNumber": "902",
-        "capacity": 25,
-        "facilities": [
-          "Theater Setup",
-          "Advanced AV",
-          "Event Space"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "Glowfish Asoke",
-    "address": "219/2 Sukhumvit 21",
-    "district": "Watthana",
-    "province": "Bangkok",
-    "postalcode": "10110",
-    "tel": "02-258-7778",
-    "opentime": "0800",
-    "closetime": "2200",
-    "rooms": [
-      {
-        "roomNumber": "1001",
-        "capacity": 5,
-        "facilities": [
-          "Ergonomic Chairs",
-          "WiFi",
-          "Phone Booth"
-        ]
-      },
-      {
-        "roomNumber": "1002",
-        "capacity": 14,
-        "facilities": [
-          "Interactive Board",
-          "Surround Sound",
-          "Refreshments"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "River City Co-Create",
-    "address": "23 Charoen Krung Road",
-    "district": "Bang Rak",
-    "province": "Bangkok",
-    "postalcode": "10500",
-    "tel": "02-237-0077",
-    "opentime": "0900",
-    "closetime": "2000",
-    "rooms": [
-      {
-        "roomNumber": "1101",
-        "capacity": 6,
-        "facilities": [
-          "River View",
-          "WiFi",
-          "Art Gallery"
-        ]
-      },
-      {
-        "roomNumber": "1102",
-        "capacity": 18,
-        "facilities": [
-          "360° Screens",
-          "Creative Studio",
-          "Workshop Tools"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "Launchpad Phrom Phong",
-    "address": "93 Sukhumvit 49/9",
-    "district": "Watthana",
-    "province": "Bangkok",
-    "postalcode": "10110",
-    "tel": "02-662-7289",
-    "opentime": "0830",
-    "closetime": "2130",
-    "rooms": [
-      {
-        "roomNumber": "1201",
-        "capacity": 4,
-        "facilities": [
-          "Standing Desk",
-          "WiFi",
-          "Meditation Room"
-        ]
-      },
-      {
-        "roomNumber": "1202",
-        "capacity": 10,
-        "facilities": [
-          "Digital Whiteboard",
-          "Gaming Zone",
-          "Nap Pods"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "The Work Loft Silom",
-    "address": "120 Silom Road",
-    "district": "Bang Rak",
-    "province": "Bangkok",
-    "postalcode": "10500",
-    "tel": "02-233-4567",
-    "opentime": "0700",
-    "closetime": "2300",
-    "rooms": [
-      {
-        "roomNumber": "1301",
-        "capacity": 7,
-        "facilities": [
-          "City View",
-          "WiFi",
-          "3D Printer"
-        ]
-      },
-      {
-        "roomNumber": "1302",
-        "capacity": 22,
-        "facilities": [
-          "Multi-Display Setup",
-          "Motion Capture",
-          "Green Screen"
+          "Executive Chairs"
         ]
       }
     ]

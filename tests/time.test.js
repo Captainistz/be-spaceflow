@@ -189,9 +189,7 @@ describe('Reservation Time Constraints Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      const updatedTime = new Date(
-        res.body.data.reservationDate
-      ).getHours()
+      const updatedTime = new Date(res.body.data.reservationDate).getHours()
       expect(updatedTime).toBe(14)
     })
 
@@ -229,9 +227,7 @@ describe('Reservation Time Constraints Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      const updatedTime = new Date(
-        res.body.data.reservationDate
-      ).getHours()
+      const updatedTime = new Date(res.body.data.reservationDate).getHours()
       expect(updatedTime).toBe(15)
     })
 

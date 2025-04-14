@@ -82,9 +82,7 @@ describe('Rooms endpoint tests', () => {
 
       expect(res.body.success).toBe(true)
       expect(res.body.data).toHaveLength(1)
-      expect(res.body.data[0].roomNumber).toBe(
-        testSpace.rooms[0].roomNumber
-      )
+      expect(res.body.data[0].roomNumber).toBe(testSpace.rooms[0].roomNumber)
     })
 
     it('should return 404 for non-existent space', async () => {
@@ -257,9 +255,7 @@ describe('Rooms endpoint tests', () => {
     beforeEach(async () => {
       // Create a new room for deletion tests
       const space = await Space.findById(spaceId)
-      space.rooms = space.rooms.filter(
-        (room) => room.roomNumber !== 'R199'
-      )
+      space.rooms = space.rooms.filter((room) => room.roomNumber !== 'R199')
       const roomToDelete = {
         roomNumber: 'R199',
         capacity: 15,
@@ -294,7 +290,7 @@ describe('Rooms endpoint tests', () => {
       // Verify room is removed
       const space = await Space.findById(spaceId)
       const deletedRoom = space.rooms.find(
-        (r) => r._id.toString() === deleteRoomId
+        (r) => r._id.toString() === deleteRoomId,
       )
       expect(deletedRoom).toBeUndefined()
     })

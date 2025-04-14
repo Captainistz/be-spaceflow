@@ -46,10 +46,10 @@ describe('User Authentication Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      expect(res.body.token).toBeDefined()
+      expect(res.body.data.token).toBeDefined()
 
       // Save token for later tests
-      userToken = res.body.token
+      userToken = res.body.data.token
     })
 
     it('should register a new admin user', async () => {
@@ -59,10 +59,10 @@ describe('User Authentication Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      expect(res.body.token).toBeDefined()
+      expect(res.body.data.token).toBeDefined()
 
       // Save token for later tests
-      adminToken = res.body.token
+      adminToken = res.body.data.token
     })
 
     it('should reject registration with missing fields', async () => {
@@ -141,7 +141,7 @@ describe('User Authentication Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      expect(res.body.token).toBeDefined()
+      expect(res.body.data.token).toBeDefined()
     })
 
     it('should not login with incorrect password', async () => {
@@ -191,7 +191,7 @@ describe('User Authentication Tests', () => {
         password: testUser.password,
       })
 
-      userToken = loginRes.body.token
+      userToken = loginRes.body.data.token
     })
 
     it('should get current user profile', async () => {

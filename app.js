@@ -13,6 +13,7 @@ const { xss } = require('express-xss-sanitizer')
 const mongoSanitize = require('express-mongo-sanitize')
 const connectDB = require('./config/db')
 const globalErrorHandler = require('./middleware/errorHandler')
+const initCronjobs = require('./utils/cron')
 
 // Load environment
 var configPath = './config/config.env'
@@ -33,9 +34,9 @@ app.use(helmet())
 app.use(hpp())
 
 // Logging
-// if (process.env.NODE_ENV === 'development') {
-//   app.use(morgan('dev'))
-// }
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
 // if (process.env.NODE_ENV !== 'test') {
 //   app.use(
 //     morgan('common', {
@@ -55,10 +56,7 @@ app.use(hpp())
 app.use('/api/v1/auth', require('./routes/auth'))
 app.use('/api/v1/spaces', require('./routes/spaces'))
 app.use('/api/v1/reservations', require('./routes/reservations'))
-app.use(
-  '/api/v1/getReservationByRoom',
-  require('./routes/getReservesByRoom')
-)
+app.use('/api/v1/getReservationByRoom', require('./routes/getReservesByRoom'))
 app.use('/api/v1/users', require('./routes/users'))
 
 // Root endpoint
@@ -69,7 +67,9 @@ app.get('/', (_, res) => {
 app.use(globalErrorHandler)
 
 if (process.env.NODE_ENV !== 'test') {
-  connectDB()
+  connectDB().then(async () => {
+    await initCronjobs()
+  })
 
   const PORT = process.env.PORT || 5000
   app.listen(PORT, () => {

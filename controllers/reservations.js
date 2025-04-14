@@ -6,40 +6,21 @@ const Space = require('../models/Space')
 // @route  GET /api/v1/reservations
 // @access Public
 const getReservations = async (req, res, next) => {
-  let queryParams = { user: req.user.id }
-
-  const reqQuery = { ...req.query }
-  const removeFields = ['select', 'sort', 'page', 'limit']
-  removeFields.forEach((param) => delete reqQuery[param])
-
-  if (req.user.role === 'admin') {
-    queryParams = req.params.space_id ? { space: req.params.space_id } : {}
+  let findParam = { user: req.user.id }
+  if (req.user.role === 'admin' && req.params.space_id) {
+    findParam = { space: req.params.space_id }
   }
 
-  let query = Reservation.find(queryParams)
+  let query = Reservation.find(findParam)
 
-  // Handle sorting
-  var sortBy = req.query.sort
-
-  switch (sortBy) {
-    case 'date-asc':
-      sortBy = '+reservationDate'
-      break
-    case 'date-desc':
-      sortBy = '-reservationDate'
-      break
-    case 'price-asc':
-      sortBy = '+price'
-      break
-    case 'price-desc':
-      sortBy = '-price'
-      break
-    default:
-      sortBy = '+reservationDate'
-      break
+  let sortParam = { reservationDate: 1 }
+  if (req.query.sort === 'date-desc') {
+    sortParam = { reservationDate: -1 }
   }
 
-  query = query.sort(sortBy)
+  query = query.sort(sortParam)
+  const isPriceSorting =
+    req.query.sort === 'price-asc' || req.query.sort === 'price-desc'
 
   try {
     const reservations = await query.populate([
@@ -59,7 +40,7 @@ const getReservations = async (req, res, next) => {
       }
 
       const roomDetails = reservation.space.rooms.find(
-        (room) => room._id.toString() === reservation.room.toString()
+        (room) => room._id.toString() === reservation.room.toString(),
       )
 
       const modifiedSpace = JSON.parse(JSON.stringify(reservation.space))
@@ -71,6 +52,14 @@ const getReservations = async (req, res, next) => {
         room: roomDetails || null,
       }
     })
+
+    if (isPriceSorting) {
+      modifiedReservations.sort((a, b) => {
+        const priceA = a.room?.price || 0
+        const priceB = b.room?.price || 0
+        return req.query.sort === 'price-asc' ? priceA - priceB : priceB - priceA
+      })
+    }
 
     res.status(200).json({
       success: true,
@@ -100,7 +89,7 @@ const getReservation = async (req, res, next) => {
     delete modifiedSpace.rooms
 
     const roomWithDetails = reservation.space.rooms.find(
-      (room) => room._id.toString() === reservation.room.toString()
+      (room) => room._id.toString() === reservation.room.toString(),
     )
 
     const modifiedReservations = {
@@ -144,8 +133,14 @@ const addReservation = async (req, res, next) => {
       throw new Error('Room not found')
     }
 
+    const date = new Date()
+
     const existsReservations = await Reservation.find({
       user: req.user.id,
+      status: 'active',
+      reservationDate: {
+        $gte: date,
+      },
     })
     if (
       existsReservations.length >= MAXIMUM_RESERVATIONS &&
@@ -274,7 +269,9 @@ const deleteReservation = async (req, res, next) => {
       throw new Error('Unauthorized')
     }
 
-    await reservation.deleteOne()
+    await reservation.updateOne({
+      status: 'cancelled',
+    })
 
     res.status(200).json({
       success: true,
@@ -303,7 +300,7 @@ const getReservesByRoom = async (req, res, next) => {
 
     // Extract and flatten the reservationDate values into a single array
     const reservedDate = reservations.map(
-      (reservation) => reservation.reservationDate
+      (reservation) => reservation.reservationDate,
     )
 
     res.status(200).json({
@@ -315,6 +312,110 @@ const getReservesByRoom = async (req, res, next) => {
   }
 }
 
+const getTimeslots = async (req, res, next) => {
+  const { space_id, id } = req.params
+  const { date } = req.query
+
+  try {
+    const targetDate = new Date(date)
+
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0))
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999))
+
+    const space = await Space.findById(space_id)
+    if (!space) {
+      throw new Error('Space not found')
+    }
+
+    const reservations = await Reservation.find({
+      room: id,
+      space: space_id,
+      reservationDate: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+      status: 'active',
+    })
+
+    const openTime = space.opentime
+    const closeTime = space.closetime
+
+    const openHour = parseInt(openTime.slice(0, 2))
+    const openMinute = parseInt(openTime.slice(2))
+    const closeHour = parseInt(closeTime.slice(0, 2))
+    const closeMinute = parseInt(closeTime.slice(2))
+
+    let currentHour = openHour
+    let currentMinute = openMinute
+
+    const today = new Date()
+    const currentTimeHour = today.getHours()
+
+    const timeslots = []
+
+    const reservedTimes = reservations.map((reservation) => {
+      const date = new Date(reservation.reservationDate)
+      const hours = date.getHours().toString().padStart(2, '0')
+      const minutes = date.getMinutes().toString().padStart(2, '0')
+      return `${hours}:${minutes}`
+    })
+
+    while (
+      currentHour < closeHour ||
+      (currentHour === closeHour && currentMinute < closeMinute)
+    ) {
+      const time = `${currentHour
+        .toString()
+        .padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`
+      let available = !reservedTimes.includes(time)
+      if (
+        targetDate.getDate() === today.getDate() &&
+        targetDate.getMonth() === today.getMonth() &&
+        targetDate.getFullYear() === today.getFullYear()
+      ) {
+        if (currentHour <= currentTimeHour) {
+          available = false
+        }
+      }
+
+      timeslots.push({ time, available })
+      currentHour += 1
+      if (currentHour != openHour) {
+        currentMinute = 0
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      data: timeslots,
+    })
+  } catch (e) {
+    if (e.message == 'Space not found') {
+      e.message = `Space not found with id of ${space_id}`
+      e.statusCode = 404
+    }
+    next(e)
+  }
+}
+
+const completedReservations = async () => {
+  try {
+    const now = new Date()
+    const res = await Reservation.updateMany(
+      {
+        status: 'active',
+        reservationDate: { $lt: now },
+      },
+      {
+        $set: { status: 'completed' },
+      },
+    )
+    return res
+  } catch (e) {
+    throw e
+  }
+}
+
 module.exports = {
   getReservations,
   addReservation,
@@ -322,4 +423,6 @@ module.exports = {
   updateReservation,
   deleteReservation,
   getReservesByRoom,
+  getTimeslots,
+  completedReservations,
 }

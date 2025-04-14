@@ -9,8 +9,10 @@ const {
 
 const router = express.Router({ mergeParams: true })
 
-router.get('/', getReviews, protect, getReviewOfuser)
+router.get('/', getReviews)
 router.post('/', protect, authorize('user', 'admin'), addReviews)
+
+router.get('/:user_id', protect, getReviewOfuser)
 
 // router.put('/:id', protect, authorize('user', 'admin'), updateReservation)
 // router.delete('/:id', protect, authorize('user', 'admin'), deleteReservation)

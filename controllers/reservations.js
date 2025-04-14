@@ -57,7 +57,7 @@ const getReservations = async (req, res, next) => {
       modifiedReservations.sort((a, b) => {
         const priceA = a.room?.price || 0
         const priceB = b.room?.price || 0
-        return sortBy === 'price-asc' ? priceA - priceB : priceB - priceA
+        return req.query.sort === 'price-asc' ? priceA - priceB : priceB - priceA
       })
     }
 

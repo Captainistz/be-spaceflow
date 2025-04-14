@@ -3,9 +3,10 @@ const { protect, authorize } = require('../middleware/auth.js')
 
 const {
     getReviews,
-    getReviewOfuser,
+    getReviewOfUser,
     addReviews,
-    upadateReview
+    updateReview,
+    deleteReview
 } = require('../controllers/reviews.js')
 
 const router = express.Router({ mergeParams: true })
@@ -13,10 +14,8 @@ const router = express.Router({ mergeParams: true })
 router.get('/', getReviews)
 router.post('/', protect, authorize('user', 'admin'), addReviews)
 
-router.get('/:user_id', protect, getReviewOfuser)
-router.put('/:review_id', protect, authorize('user', 'admin'),upadateReview)
-
-// router.put('/:id', protect, authorize('user', 'admin'), updateReservation)
-// router.delete('/:id', protect, authorize('user', 'admin'), deleteReservation)
+router.get('/:user_id', protect, getReviewOfUser)
+router.put('/:review_id', protect, authorize('user', 'admin'), updateReview)
+router.delete('/:review_id', protect, authorize('user', 'admin'), deleteReview)
 
 module.exports = router

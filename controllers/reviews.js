@@ -1,10 +1,9 @@
 const Review = require('../models/Review.js');
-const Space = require('../models/Space.js');
 
 // @desc   Get review of user of space
 // @route  GET /api/v1/:space_id/reviews/:user_id
 // @access Public
-async function getReviewOfuser(req, res, next) {
+async function getReviewOfUser(req, res, next) {
     const { space_id, user_id } = req.params
 
     try {
@@ -26,9 +25,9 @@ async function getReviewOfuser(req, res, next) {
 async function getReviews(req, res, next) {
     const { space_id } = req.params
 
-    if (req.headers['authorization']) {
-        return getReviewOfuser(req, res, next)
-    }
+    // if (req.headers['authorization']) {
+    //     return getReviewOfuser(req, res, next)
+    // }
 
     try {
         const result = await Review.find({ spaceId: space_id }).populate({
@@ -70,14 +69,26 @@ async function addReviews(req, res, next) {
     }
 }
 
-async function upadateReview(req,res,next) {
-    const {review_id} = req.params;
-    console.log(review_id)
+// @desc   update review of user of space
+// @route  PUT /api/v1/:space_id/reviews/:review_id
+// @access Private
+async function updateReview(req,res,next) {
+    const { space_id, review_id } = req.params;
+    // console.log(review_id)
+
+    let tmp = {...req.body}
+    if (!req.body.upVote && !req.body.downVote) {
+        tmp.updatedAt = Date.now();
+    }
+
     try {
-        const review = await Review.findByIdAndUpdate(review_id , req.body, {
-            new : true,
-            runValidators : true,
-        })
+        const review = await Review.findByIdAndUpdate(
+            review_id, tmp,
+            {
+                new : true,
+                runValidators : true,
+            }
+        )
 
         if(!review){
             throw new Error('Not found')
@@ -90,8 +101,36 @@ async function upadateReview(req,res,next) {
     } catch (e) {
         next(e)
     }
-
 }
 
+// @desc   delete review of user of space
+// @route  DELETE /api/v1/:space_id/reviews/:review_id
+// @access Private
+async function deleteReview(req, res, next) {
+    const { id } = req.params
+    try {
+      const review = await Review.findById(id)
+      if (!review) {
+        throw new Error('Not found')
+      }
+  
+      if (review.userId !== req.user._id && req.user.role !== 'admin') {
+        throw new Error('Unauthorized')
+      }
+  
+      await review.deleteOne()
+  
+      return res.status(200).json({
+        success: true,
+        data: {},
+      })
+    } catch (e) {
+      if (e.name == 'CastError' || e.message == 'Not found') {
+        e.message = `Review not found with id of ${id}`
+        e.statusCode = 404
+      }
+      next(e)
+    }
+  }
 
-module.exports = { getReviewOfuser, getReviews, addReviews , upadateReview}
+module.exports = { getReviewOfUser, getReviews, addReviews, updateReview, deleteReview }

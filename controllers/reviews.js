@@ -107,9 +107,9 @@ async function updateReview(req,res,next) {
 // @route  DELETE /api/v1/:space_id/reviews/:review_id
 // @access Private
 async function deleteReview(req, res, next) {
-    const { id } = req.params
+    const { review_id } = req.params
     try {
-      const review = await Review.findById(id)
+      const review = await Review.findById(review_id)
       if (!review) {
         throw new Error('Not found')
       }
@@ -126,7 +126,7 @@ async function deleteReview(req, res, next) {
       })
     } catch (e) {
       if (e.name == 'CastError' || e.message == 'Not found') {
-        e.message = `Review not found with id of ${id}`
+        e.message = `Review not found with id of ${review_id}`
         e.statusCode = 404
       }
       next(e)

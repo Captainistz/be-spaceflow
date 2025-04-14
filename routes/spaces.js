@@ -12,9 +12,11 @@ const router = express.Router()
 
 const reservationRoutes = require('./reservations.js')
 const roomRoutes = require('./rooms.js')
+const reviewRoutes = require('./review.js')
 
 router.use('/:space_id/reservations/', reservationRoutes)
 router.use('/:space_id/rooms', roomRoutes)
+router.use('/:space_id/reviews', reviewRoutes)
 
 router.get('/', getSpaces)
 router.post('/', protect, authorize('admin'), addSpace)

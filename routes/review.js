@@ -3,12 +3,13 @@ const { protect, authorize } = require('../middleware/auth.js')
 
 const {
     getReviews,
+    getReviewOfuser,
     addReviews
 } = require('../controllers/reviews.js')
 
 const router = express.Router({ mergeParams: true })
 
-router.get('/', getReviews)
+router.get('/', getReviews, protect, getReviewOfuser)
 router.post('/', protect, authorize('user', 'admin'), addReviews)
 
 // router.put('/:id', protect, authorize('user', 'admin'), updateReservation)

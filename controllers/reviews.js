@@ -1,4 +1,5 @@
 const Review = require('../models/Review.js');
+const Space = require('../models/Space.js');
 
 // @desc   Get review of user of space
 // @route  GET /api/v1/:space_id/reviews/:user_id
@@ -69,5 +70,28 @@ async function addReviews(req, res, next) {
     }
 }
 
+async function upadateReview(req,res,next) {
+    const {review_id} = req.params;
+    console.log(review_id)
+    try {
+        const review = await Review.findByIdAndUpdate(review_id , req.body, {
+            new : true,
+            runValidators : true,
+        })
 
-module.exports = { getReviewOfuser, getReviews, addReviews }
+        if(!review){
+            throw new Error('Not found')
+        }
+
+        return res.status(200).json({
+            success : true,
+            data : review,
+        })
+    } catch (e) {
+        next(e)
+    }
+
+}
+
+
+module.exports = { getReviewOfuser, getReviews, addReviews , upadateReview}

@@ -142,7 +142,7 @@ const addReservation = async (req, res, next) => {
       reservationDate: reservationDate,
     })
 
-    if (activeReservations) {
+    if (!activeReservations) {
       throw new Error('Reserved')
     }
 

@@ -1,8 +1,5 @@
-const fs = require('fs')
 const cors = require('cors')
 const hpp = require('hpp')
-const csurf = require('csurf')
-const session = require('express-session')
 const dotenv = require('dotenv')
 const helmet = require('helmet')
 const morgan = require('morgan')
@@ -11,7 +8,7 @@ const cookirParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
 const { xss } = require('express-xss-sanitizer')
 const mongoSanitize = require('express-mongo-sanitize')
-const connectDB = require('./config/db')
+const connectDB = require('./utils/db')
 const globalErrorHandler = require('./middleware/errorHandler')
 const initCronjobs = require('./utils/cron')
 
@@ -20,6 +17,7 @@ var configPath = './config/config.env'
 if (process.env.NODE_ENV === 'test') {
   configPath = './config/config.test.env'
 }
+
 dotenv.config({ path: configPath })
 
 const app = express()
@@ -37,20 +35,15 @@ app.use(hpp())
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
-// if (process.env.NODE_ENV !== 'test') {
-//   app.use(
-//     morgan('common', {
-//       stream: fs.createWriteStream('./logs/access.log', { flags: 'a' }),
-//     })
-//   )
-// }
 
 // Rate limit
-// const limiter = rateLimit({
-//   windowMs: 10 * 60 * 100,
-//   limit: 100,
-// })
-// app.use(limiter)
+if (process.env.NODE_ENV === 'production') {
+  const limiter = rateLimit({
+    windowMs: 10 * 60 * 100,
+    limit: 100,
+  })
+  app.use(limiter)
+}
 
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'))

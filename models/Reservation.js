@@ -35,9 +35,6 @@ const ReservationSchema = new mongoose.Schema({
   },
 })
 
-ReservationSchema.index(
-  { reservationDate: 1, room: 1, space: 1 },
-  { unique: true },
-)
+ReservationSchema.index({ unique: true })
 
 module.exports = mongoose.model('Reservation', ReservationSchema)

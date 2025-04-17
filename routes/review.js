@@ -2,11 +2,11 @@ const express = require('express')
 const { protect, authorize } = require('../middleware/auth.js')
 
 const {
-    getReviews,
-    getReviewOfUser,
-    addReviews,
-    updateReview,
-    deleteReview
+  getReviews,
+  getReviewOfUser,
+  addReviews,
+  updateReview,
+  deleteReview,
 } = require('../controllers/reviews.js')
 
 const router = express.Router({ mergeParams: true })

@@ -15,7 +15,7 @@ const getSpaces = async (req, res, next) => {
     let queryString = JSON.stringify(reqQuery)
     queryString = queryString.replace(
       /\b(gt|gte|lt|lte|in)\b/g,
-      (match) => `$${match}`
+      (match) => `$${match}`,
     )
     const parsedQuery = JSON.parse(queryString)
 

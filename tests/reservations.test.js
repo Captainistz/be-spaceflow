@@ -58,9 +58,7 @@ const testUser = {
 }
 
 const testReservation = {
-  reservationDate: new Date(
-    Date.now() + 48 * 60 * 60 * 1000
-  ).toISOString(), // 2 days in future
+  reservationDate: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 2 days in future
 }
 
 describe('Reservations endpoint tests', () => {
@@ -183,10 +181,10 @@ describe('Reservations endpoint tests', () => {
             .set('Authorization', `Bearer ${userToken}`)
             .send({
               reservationDate: new Date(
-                Date.now() + (i + 1) * 24 * 60 * 60 * 1000
+                Date.now() + (i + 1) * 24 * 60 * 60 * 1000,
               ).toISOString(), // different dates
               room: roomId,
-            })
+            }),
         )
       }
 
@@ -217,10 +215,10 @@ describe('Reservations endpoint tests', () => {
             .set('Authorization', `Bearer ${adminToken}`)
             .send({
               reservationDate: new Date(
-                Date.now() + (i + 1) * 24 * 60 * 60 * 1000
+                Date.now() + (i + 1) * 24 * 60 * 60 * 1000,
               ).toISOString(), // different dates
               room: roomId,
-            })
+            }),
         )
       }
 
@@ -370,9 +368,7 @@ describe('Reservations endpoint tests', () => {
     })
 
     it('should allow user to update their own reservation', async () => {
-      const newDate = new Date(
-        Date.now() + 72 * 60 * 60 * 1000
-      ).toISOString()
+      const newDate = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
       const res = await request(app)
         .put(`/api/v1/reservations/${userReservationId}`)
         .set('Authorization', `Bearer ${userToken}`)
@@ -383,7 +379,7 @@ describe('Reservations endpoint tests', () => {
 
       expect(res.body.success).toBe(true)
       expect(new Date(res.body.data.reservationDate).toISOString()).toBe(
-        newDate
+        newDate,
       )
     })
 
@@ -393,16 +389,14 @@ describe('Reservations endpoint tests', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           reservationDate: new Date(
-            Date.now() + 96 * 60 * 60 * 1000
+            Date.now() + 96 * 60 * 60 * 1000,
           ).toISOString(),
         })
         .expect(401)
     })
 
     it('should allow admin to update any reservation', async () => {
-      const newDate = new Date(
-        Date.now() + 72 * 60 * 60 * 1000
-      ).toISOString()
+      const newDate = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
       const res = await request(app)
         .put(`/api/v1/reservations/${userReservationId}`)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -413,7 +407,7 @@ describe('Reservations endpoint tests', () => {
 
       expect(res.body.success).toBe(true)
       expect(new Date(res.body.data.reservationDate).toISOString()).toBe(
-        newDate
+        newDate,
       )
     })
 
@@ -424,7 +418,7 @@ describe('Reservations endpoint tests', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           reservationDate: new Date(
-            Date.now() + 96 * 60 * 60 * 1000
+            Date.now() + 96 * 60 * 60 * 1000,
           ).toISOString(),
         })
         .expect(404)
@@ -435,7 +429,7 @@ describe('Reservations endpoint tests', () => {
         .put(`/api/v1/reservations/${userReservationId}`)
         .send({
           reservationDate: new Date(
-            Date.now() + 96 * 60 * 60 * 1000
+            Date.now() + 96 * 60 * 60 * 1000,
           ).toISOString(),
         })
         .expect(401)

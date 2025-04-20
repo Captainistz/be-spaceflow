@@ -70,7 +70,6 @@ const SpaceSchema = new mongoose.Schema({
   },
   rooms: {
     type: [RoomSchema],
-    required: [true, 'Please add a list of rooms'],
   },
   image: {
     type: String,
@@ -81,10 +80,6 @@ const SpaceSchema = new mongoose.Schema({
 SpaceSchema.index({ 'rooms.roomNumber': 1 }, { unique: true })
 
 SpaceSchema.path('rooms').validate(function (rooms) {
-  return rooms.length > 0
-}, 'Rooms must contains at least 1 room')
-
-SpaceSchema.path('rooms').validate(function (rooms) {
   const roomNumbers = rooms.map((room) => room.roomNumber)
   const uniqueRoomNumbers = new Set(roomNumbers)
   return roomNumbers.length === uniqueRoomNumbers.size
@@ -92,36 +87,37 @@ SpaceSchema.path('rooms').validate(function (rooms) {
 
 SpaceSchema.methods.getRoomIdx = function (room_id) {
   if (!room_id) return -1
-  const idx = this.rooms.findIndex(
-    (room) => room._id.toString() === room_id
-  )
+  const idx = this.rooms.findIndex((room) => room._id.toString() === room_id)
   return idx
 }
 
 SpaceSchema.methods.getRoom = function (room_id) {
   if (!room_id) return null
-  const foundRoom = this.rooms.find(
-    (room) => room._id.toString() === room_id
-  )
+  const foundRoom = this.rooms.find((room) => room._id.toString() === room_id)
   return foundRoom
 }
 
 SpaceSchema.methods.checkOpeningHours = function (reservationDate) {
-  const openDateTime = new Date(reservationDate)
-  const closeDateTime = new Date(reservationDate)
-  const rsvDateTime = new Date(reservationDate)
+  const date = new Date(reservationDate)
 
-  openDateTime.setHours(
-    parseInt(this.opentime.substring(0, 2)),
-    parseInt(this.opentime.substring(2, 4))
-  )
+  const openDateTime = new Date(date)
+  const closeDateTime = new Date(date)
 
-  closeDateTime.setHours(
-    parseInt(this.closetime.substring(0, 2)),
-    parseInt(this.closetime.substring(2, 4))
-  )
+  const openHour = parseInt(this.opentime.substring(0, 2))
+  const openMinute = parseInt(this.opentime.substring(2, 4))
+  let openHourUTC = openHour - 7
+  if (openHourUTC < 0) openHourUTC += 24
 
-  return openDateTime <= rsvDateTime && rsvDateTime < closeDateTime
+  openDateTime.setUTCHours(openHourUTC, openMinute)
+
+  const closeHour = parseInt(this.closetime.substring(0, 2))
+  const closeMinute = parseInt(this.closetime.substring(2, 4))
+  let closeHourUTC = closeHour - 7
+  if (closeHourUTC < 0) closeHourUTC += 24
+
+  closeDateTime.setUTCHours(closeHourUTC, closeMinute)
+
+  return openDateTime <= date && date < closeDateTime
 }
 
 SpaceSchema.virtual('reservations', {

@@ -4,6 +4,10 @@ const ReservationSchema = new mongoose.Schema({
   reservationDate: {
     type: Date,
     required: true,
+    set: function (date) {
+      const d = new Date(date)
+      return d
+    },
   },
   user: {
     type: mongoose.Schema.ObjectId,
@@ -20,12 +24,17 @@ const ReservationSchema = new mongoose.Schema({
     ref: 'Space',
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['active', 'cancelled', 'completed'],
+    default: 'active',
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 })
 
-ReservationSchema.index({ reservationDate: 1, room: 1, space: 1 }, { unique: true });
+ReservationSchema.index({ unique: true })
 
 module.exports = mongoose.model('Reservation', ReservationSchema)

@@ -4,6 +4,7 @@ const Space = require('../models/Space')
 const User = require('../models/User')
 const Reservation = require('../models/Reservation')
 const { connectDB, disconnectDB } = require('./memory-server')
+const { testUser, testUser2, testAdmin, testSpace } = require('./data')
 
 let adminToken
 let userToken
@@ -15,55 +16,10 @@ let reservationId
 let reservation2Id
 let reservation3Id
 
-const testSpace = {
-  name: 'Test Space for Requirements',
-  address: '123 Requirements Street',
-  district: 'Test District',
-  province: 'Bangkok',
-  postalcode: '10110',
-  tel: '02-111-1111',
-  opentime: '0900',
-  closetime: '2100',
-  rooms: [
-    {
-      roomNumber: 'R101',
-      capacity: 4,
-      facilities: ['WiFi', 'Whiteboard'],
-    },
-    {
-      roomNumber: 'R102',
-      capacity: 8,
-      facilities: ['WiFi', 'Projector'],
-    },
-  ],
-}
-
-const testUser = {
-  name: 'Test User',
-  email: 'testuser@requirements.com',
-  password: '123456',
-  phone: '0811111111',
-}
-
-const testUser2 = {
-  name: 'Test User 2',
-  email: 'testuser2@requirements.com',
-  password: '123456',
-  phone: '0822222222',
-}
-
-const testAdmin = {
-  name: 'Admin User',
-  email: 'admin@requirements.com',
-  password: '123456',
-  phone: '0833333333',
-  role: 'admin',
-}
-
 const createValidReservationDate = (nextNDays, hour, minute = 0) => {
   const date = new Date()
   date.setDate(date.getDate() + nextNDays)
-  date.setHours(hour, minute, 0, 0)
+  date.setUTCHours(hour, minute, 0, 0)
   return date.toISOString()
 }
 
@@ -71,8 +27,7 @@ const reservationDate = (nextNDays, timeOffset = 0) => {
   const openHour = parseInt(testSpace.opentime.substring(0, 2))
   const closeHour = parseInt(testSpace.closetime.substring(0, 2)) - 1
 
-  const validHour =
-    openHour + 1 + (timeOffset % (closeHour - openHour - 1))
+  const validHour = openHour + 1 + (timeOffset % (closeHour - openHour - 1))
 
   return createValidReservationDate(nextNDays, validHour, 30)
 }
@@ -84,10 +39,6 @@ const invalidReservationDate = (nextNDays, beforeOpening = true) => {
   const hour = beforeOpening ? openHour - 1 : closeHour + 1
 
   return createValidReservationDate(nextNDays, hour, 0)
-}
-
-const testReservation = {
-  reservationDate: reservationDate(1),
 }
 
 describe('System Requirements Tests', () => {
@@ -115,8 +66,8 @@ describe('System Requirements Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      expect(res.body.token).toBeDefined()
-      userToken = res.body.token
+      expect(res.body.data.token).toBeDefined()
+      userToken = res.body.data.token
 
       const userRes = await request(app)
         .get('/api/v1/auth/me')
@@ -130,7 +81,7 @@ describe('System Requirements Tests', () => {
         .expect(200)
 
       expect(res2.body.success).toBe(true)
-      user2Token = res2.body.token
+      user2Token = res2.body.data.token
 
       const user2Res = await request(app)
         .get('/api/v1/auth/me')
@@ -143,7 +94,7 @@ describe('System Requirements Tests', () => {
         .send(testAdmin)
         .expect(200)
 
-      adminToken = adminRes.body.token
+      adminToken = adminRes.body.data.token
 
       const adminMeRes = await request(app)
         .get('/api/v1/auth/me')
@@ -177,7 +128,7 @@ describe('System Requirements Tests', () => {
         .expect(200)
 
       expect(res.body.success).toBe(true)
-      expect(res.body.token).toBeDefined()
+      expect(res.body.data.token).toBeDefined()
     })
 
     it('should reject login with incorrect credentials', async () => {
@@ -206,11 +157,11 @@ describe('System Requirements Tests', () => {
       const res = await request(app).get('/api/v1/spaces').expect(200)
 
       expect(res.body.success).toBe(true)
-      expect(res.body.data).toHaveLength(1)
-      expect(res.body.data[0].name).toBe(testSpace.name)
-      expect(res.body.data[0].tel).toBe(testSpace.tel)
-      expect(res.body.data[0].opentime).toBe(testSpace.opentime)
-      expect(res.body.data[0].closetime).toBe(testSpace.closetime)
+      expect(res.body.data.spaces).toHaveLength(1)
+      expect(res.body.data.spaces[0].name).toBe(testSpace.name)
+      expect(res.body.data.spaces[0].tel).toBe(testSpace.tel)
+      expect(res.body.data.spaces[0].opentime).toBe(testSpace.opentime)
+      expect(res.body.data.spaces[0].closetime).toBe(testSpace.closetime)
     })
 
     it('should allow a registered user to make a first reservation', async () => {
@@ -333,7 +284,7 @@ describe('System Requirements Tests', () => {
       expect(res.body.data.length).toBe(3)
 
       const allUserReservations = res.body.data.every(
-        (reservation) => reservation.user === userId
+        (reservation) => reservation.user === userId,
       )
       expect(allUserReservations).toBe(true)
     })
@@ -356,7 +307,7 @@ describe('System Requirements Tests', () => {
       expect(res.body.count).toBe(3)
 
       const allUserReservations = res.body.data.every(
-        (reservation) => reservation.user === userId
+        (reservation) => reservation.user === userId,
       )
       expect(allUserReservations).toBe(true)
     })
@@ -376,7 +327,7 @@ describe('System Requirements Tests', () => {
 
       expect(res.body.success).toBe(true)
       expect(new Date(res.body.data.reservationDate).toISOString()).toBe(
-        newDate
+        newDate,
       )
     })
 
@@ -488,7 +439,7 @@ describe('System Requirements Tests', () => {
 
       expect(res.body.success).toBe(true)
       expect(new Date(res.body.data.reservationDate).toISOString()).toBe(
-        newDate
+        newDate,
       )
       expect(res.body.data.user).toBe(userId)
     })

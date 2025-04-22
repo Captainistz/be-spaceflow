@@ -23,7 +23,15 @@ dotenv.config({ path: configPath })
 const app = express()
 
 // Setup express
-app.use(cors())
+let corsOptions
+if (process.env.NODE_ENV === 'production') {
+  corsOptions = {
+    origin: 'https://spaceflow.captainistz.me',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  }
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookirParser())
 app.use(mongoSanitize())

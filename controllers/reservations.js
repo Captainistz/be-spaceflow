@@ -57,7 +57,9 @@ const getReservations = async (req, res, next) => {
       modifiedReservations.sort((a, b) => {
         const priceA = a.room?.price || 0
         const priceB = b.room?.price || 0
-        return req.query.sort === 'price-asc' ? priceA - priceB : priceB - priceA
+        return req.query.sort === 'price-asc'
+          ? priceA - priceB
+          : priceB - priceA
       })
     }
 
@@ -135,6 +137,15 @@ const addReservation = async (req, res, next) => {
 
     const date = new Date()
 
+    const activeReservations = await Reservation.find({
+      status: 'active',
+      reservationDate: reservationDate,
+    })
+
+    if (!activeReservations) {
+      throw new Error('Reserved')
+    }
+
     const existsReservations = await Reservation.find({
       user: req.user.id,
       status: 'active',
@@ -142,6 +153,7 @@ const addReservation = async (req, res, next) => {
         $gte: date,
       },
     })
+
     if (
       existsReservations.length >= MAXIMUM_RESERVATIONS &&
       req.user.role !== 'admin'
@@ -174,6 +186,8 @@ const addReservation = async (req, res, next) => {
       e.message = `The user with ID ${req.user.id} has exceeded the maximum number of reservations (${MAXIMUM_RESERVATIONS})`
       e.statusCode = 409
     } else if (e.message == 'Not a valid time') {
+      e.statusCode = 400
+    } else if (e.message == 'Reserved') {
       e.statusCode = 400
     }
     next(e)

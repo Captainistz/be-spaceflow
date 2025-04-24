@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, development, cicd-test]
+    branches: [main, development]
   pull_request:
     branches: [main, development]
   workflow_dispatch:
@@ -10,6 +10,8 @@ on:
 env:
   REGISTRY: ghcr.io
   REPO: ${{ github.repository }}
+  DOCKER_IMAGE_DIGEST:
+  DOCKER_IMAGE_URL:
 
 jobs:
   build-and-push:

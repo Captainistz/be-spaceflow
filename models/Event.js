@@ -37,8 +37,13 @@ const EventSchema = new mongoose.Schema({
 })
 
 EventSchema.pre('validate', function (next) {
+  if (!this.startDate || !this.endDate) return next()
+
   const startDate = new Date(this.startDate)
   const endDate = new Date(this.endDate)
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()))
+    return next(new Error('Invalid date format'))
 
   if (startDate >= endDate)
     return next(new Error('End date must be after start date'))

@@ -107,8 +107,20 @@ const createEvent = async (req, res, next) => {
 // @route   PUT /api/v1/events/:event_id
 // @access  Private
 const editEvent = async (req, res, next) => {
+  const { event_id } = req.params
   try {
-    // TODO: ...
+    const event = await Event.findById({ _id: event_id })
+    if (!event) {
+      throw new Error('Not found')
+    }
+
+    Object.assign(event, req.body)
+    await event.save()
+
+    return res.status(200).json({
+      success: true,
+      data: event,
+    })
   } catch (error) {
     next(error)
   }

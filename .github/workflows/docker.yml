@@ -7,8 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  OWNER: spaceflow
-  IMAGE_NAME: be-spaceflow
+  REPO: ${{ github.repository }}
 
 jobs:
   build-and-push:
@@ -20,6 +19,10 @@ jobs:
       id-token: write
 
     steps:
+      - name: Pre-action
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY@L}" >> "${GITHUB_ENV}"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -37,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.REPO }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -62,7 +65,7 @@ jobs:
         run: |
           echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
           echo "DOCKER_IMAGE_DIGEST=${{ steps.build-and-push.outputs.digest }}" >> $GITHUB_ENV
-          echo "DOCKER_IMAGE_URL=${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE_URL=${{ env.REGISTRY }}/${{ env.REPO }}@${{ steps.build-and-push.outputs.digest }}" >> $GITHUB_ENV
 
       - name: Add digest to job summary
         run: |

@@ -3,8 +3,8 @@ const mongoose = require('mongoose')
 const EventAttendanceSchema = new mongoose.Schema({
   event: {
     type: mongoose.Schema.ObjectId,
-    ref: "Event",
-    required: true
+    ref: 'Event',
+    required: true,
   },
   user: {
     type: mongoose.Schema.ObjectId,
@@ -20,7 +20,7 @@ const EventAttendanceSchema = new mongoose.Schema({
     type: String,
     enum: ['upcoming', 'happening', 'ended'],
     default: 'upcoming',
-  }, 
+  },
   createdAt: {
     type: Date,
     default: Date.now,

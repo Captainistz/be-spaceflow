@@ -48,6 +48,7 @@ if (process.env.NODE_ENV === 'production') {
 // Mount routers
 app.use('/api/v1/auth', require('./routes/auth'))
 app.use('/api/v1/spaces', require('./routes/spaces'))
+app.use('/api/v1/events', require('./routes/event'))
 app.use('/api/v1/reservations', require('./routes/reservations'))
 app.use('/api/v1/getReservationByRoom', require('./routes/getReservesByRoom'))
 app.use('/api/v1/users', require('./routes/users'))

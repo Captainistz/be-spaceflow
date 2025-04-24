@@ -1,0 +1,130 @@
+const Event = require('../models/Event');
+const Space = require('../models/Space');
+const EventAttendance = require('../models/EventAttendance');
+
+
+// @desc    Get all events
+// @route   GET /api/v1/events
+// @access  Public
+const getEvents = async (req, res, next) => {
+  try {
+    // Build filter query
+    const reqQuery = { ...req.query };
+    const removeFields = ['select', 'sort', 'page', 'limit'];
+    removeFields.forEach((param) => delete reqQuery[param]);
+    
+    // Create query string with MongoDB operators
+    let queryString = JSON.stringify(reqQuery);
+    queryString = queryString.replace(
+      /\b(gt|gte|lt|lte|in)\b/g,
+      (match) => `$${match}`,
+    );
+    const parsedQuery = JSON.parse(queryString);
+
+    // Prepare base query
+    let query = Event.find(parsedQuery).populate('space', 'name');
+    
+    // Handle select fields
+    if (req.query.select) {
+      query = query.select(req.query.select.split(',').join(' '));
+    }
+    
+    //Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 6;
+    const startIndex = (page - 1) * limit;
+
+    // Execute queries in parallel
+    const [total, events] = await Promise.all([
+      Event.countDocuments(parsedQuery),
+      query.skip(startIndex).limit(limit).populate('space', 'name'),
+    ]);
+
+    // Build pagination object
+    const totalPages = Math.ceil(total / limit);
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+
+    res.status(200).json({
+        success: true,
+        data: {
+          events,
+          pagination,
+        },
+    });    
+  } catch (e) {
+    next(e);
+  }
+};
+
+// @desc    Get event by ID
+// @route   GET /api/v1/events/:event_id
+// @access  Public
+const getEvent = async (req, res, next) => {
+  const { event_id } = req.params; 
+  try {
+    const event = await Event.findById(event_id);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: event,
+    });
+  } catch (e) {
+    if (e.name === 'CastError') {
+      e.message = `Event not found with id of ${event_id}`;
+      e.statusCode = 404;
+    }
+    next(e);
+  }
+};
+
+// @desc    Create a new event
+// @route   POST /api/v1/events
+// @access  Private
+const createEvent = async (req, res, next) => {
+  try {
+    const event = await Event.create(req.body);
+    res.status(201).json({
+      success: true,
+      data: event,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// @desc    Edit a event
+// @route   PUT /api/v1/events/:event_id
+// @access  Private
+const editEvent = async (req, res, next) => {
+  try {
+    // TODO: ...
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete a event
+// @route   DELETE /api/v1/events/:event_id
+// @access  Private
+const deleteEvent = async (req, res, next) => {
+    try {
+      // TODO: ...
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+  module.exports = {getEvents, getEvent, createEvent, editEvent, deleteEvent}

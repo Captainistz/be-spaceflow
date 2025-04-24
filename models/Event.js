@@ -5,7 +5,7 @@ const EventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  spaceId: {
+  space: {
     type: mongoose.Schema.ObjectId,
     ref: 'Space',
     required: true,
@@ -15,8 +15,7 @@ const EventSchema = new mongoose.Schema({
     required: true,
   },
   host: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   capacity: {

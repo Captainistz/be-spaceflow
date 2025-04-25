@@ -7,6 +7,7 @@ const {
   createEvent,
   editEvent,
   deleteEvent,
+  joinEvent,
 } = require('../controllers/events.js')
 
 const router = express.Router({ mergeParams: true })
@@ -17,5 +18,7 @@ router.post('/', createEvent)
 router.get('/:event_id', getEvent)
 router.put('/:event_id', editEvent)
 // router.delete("/:event_id", deleteEvent);
+
+router.post('/:event_id/join', protect, joinEvent)
 
 module.exports = router

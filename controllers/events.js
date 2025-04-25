@@ -137,4 +137,53 @@ const deleteEvent = async (req, res, next) => {
   }
 }
 
-module.exports = { getEvents, getEvent, createEvent, editEvent, deleteEvent }
+// @desc    join an ongoing event
+// @route   POST /api/v1/events/:event_id/join
+// @access  Private
+const joinEvent = async (req,res,next) => {
+  const { event_id } = req.params;
+
+  try {
+    const event = await Event.findById(event_id); 
+
+    // find if event exists
+    if (!event) {
+      throw new Error('Not found')
+    }
+
+    // find if user has already reserved
+    const userHasJoined = await EventAttendance.exists({ event:event_id, user:req.user.id});
+    if (userHasJoined) {
+      throw new Error('This user has already joined this event');
+    }
+
+    // check (end) time
+    const now = new Date();
+    if (now >= event.endDate) {
+      throw new Error('Event has ended') ;
+    }
+    
+
+    // check event max capacity
+    const totalJoin = await EventAttendance.countDocuments({ event: event._id }); // count document with this eventId
+    if (event.capacity <= totalJoin) {
+      return next(new Error('The maximum capacity is reached'));
+    }
+
+    // pollute req.body
+    req.body.user = req.user.id;
+    req.body.event = event_id
+
+    const reservation = await EventAttendance.create(req.body)
+
+    res.status(200).json({
+      success: true,
+      data: reservation,
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+module.exports = { getEvents, getEvent, createEvent, editEvent, deleteEvent, joinEvent }

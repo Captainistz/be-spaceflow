@@ -22,6 +22,11 @@ const EventSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['upcoming', 'happening', 'ended'],
+    default: 'upcoming',
+  },
   startDate: {
     type: Date,
     required: true,

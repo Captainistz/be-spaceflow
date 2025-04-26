@@ -39,6 +39,10 @@ const EventSchema = new mongoose.Schema({
     type: String,
     default: '/placehold.jpg',
   },
+  attendee: {
+    type: Number,
+    default: 0,
+  }
 })
 
 EventSchema.pre('validate', function (next) {

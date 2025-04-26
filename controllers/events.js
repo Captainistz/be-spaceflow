@@ -174,6 +174,7 @@ const joinEvent = async (req,res,next) => {
     req.body.event = event_id
 
     const reservation = await EventAttendance.create(req.body)
+    await Event.updateOne({_id:event_id}, {$inc:{attendee:1}})
 
     res.status(200).json({
       success: true,

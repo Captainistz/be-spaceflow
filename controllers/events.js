@@ -162,7 +162,6 @@ const joinEvent = async (req,res,next) => {
     if (now >= event.endDate) {
       throw new Error('Event has ended') ;
     }
-    
 
     // check event max capacity
     const totalJoin = await EventAttendance.countDocuments({ event: event._id }); // count document with this eventId
@@ -186,4 +185,19 @@ const joinEvent = async (req,res,next) => {
   }
 }
 
-module.exports = { getEvents, getEvent, createEvent, editEvent, deleteEvent, joinEvent }
+// @desc    get event attendances of this user with event detail populated
+// @route   GET /api/v1/events/eventAttendance
+// @access  Private
+const getEventAttendancesByUser = async (req,res,next) => {
+  try {
+    const eventAttendances = await EventAttendance.find({user:req.user.id}).populate('event');
+    res.status(200).json({
+      success: true,
+      data: eventAttendances,
+    })
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { getEvents, getEvent, createEvent, editEvent, deleteEvent, joinEvent, getEventAttendancesByUser }

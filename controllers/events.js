@@ -68,7 +68,7 @@ const getEvents = async (req, res, next) => {
 const getEvent = async (req, res, next) => {
   const { event_id } = req.params
   try {
-    const event = await Event.findById(event_id)
+    const event = await Event.findById(event_id).populate('space', 'name')
     if (!event) {
       return res.status(404).json({
         success: false,

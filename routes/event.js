@@ -8,7 +8,7 @@ const {
   editEvent,
   deleteEvent,
   joinEvent,
-  getEventAttendancesByUser
+  getEventAttendancesByUser,
 } = require('../controllers/events.js')
 
 const router = express.Router({ mergeParams: true })

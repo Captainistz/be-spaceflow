@@ -140,11 +140,11 @@ const deleteEvent = async (req, res, next) => {
 // @desc    join an ongoing event
 // @route   POST /api/v1/events/:event_id/join
 // @access  Private
-const joinEvent = async (req,res,next) => {
-  const { event_id } = req.params;
+const joinEvent = async (req, res, next) => {
+  const { event_id } = req.params
 
   try {
-    const event = await Event.findById(event_id); 
+    const event = await Event.findById(event_id)
 
     // find if event exists
     if (!event) {
@@ -152,25 +152,28 @@ const joinEvent = async (req,res,next) => {
     }
 
     // find if user has already reserved
-    const userHasJoined = await EventAttendance.exists({ event:event_id, user:req.user.id});
+    const userHasJoined = await EventAttendance.exists({
+      event: event_id,
+      user: req.user.id,
+    })
     if (userHasJoined) {
-      throw new Error('This user has already joined this event');
+      throw new Error('This user has already joined this event')
     }
 
     // check (end) time
-    const now = new Date();
+    const now = new Date()
     if (now >= event.endDate) {
-      throw new Error('Event has ended') ;
+      throw new Error('Event has ended')
     }
 
     // check event max capacity
-    const totalJoin = await EventAttendance.countDocuments({ event: event._id }); // count document with this eventId
+    const totalJoin = await EventAttendance.countDocuments({ event: event._id }) // count document with this eventId
     if (event.capacity <= totalJoin) {
-      return next(new Error('The maximum capacity is reached'));
+      return next(new Error('The maximum capacity is reached'))
     }
 
     // pollute req.body
-    req.body.user = req.user.id;
+    req.body.user = req.user.id
     req.body.event = event_id
 
     const reservation = await EventAttendance.create(req.body)
@@ -179,7 +182,6 @@ const joinEvent = async (req,res,next) => {
       success: true,
       data: reservation,
     })
-
   } catch (error) {
     next(error)
   }
@@ -188,16 +190,26 @@ const joinEvent = async (req,res,next) => {
 // @desc    get event attendances of this user with event detail populated
 // @route   GET /api/v1/events/eventAttendance
 // @access  Private
-const getEventAttendancesByUser = async (req,res,next) => {
+const getEventAttendancesByUser = async (req, res, next) => {
   try {
-    const eventAttendances = await EventAttendance.find({user:req.user.id}).populate('event');
+    const eventAttendances = await EventAttendance.find({
+      user: req.user.id,
+    }).populate('event')
     res.status(200).json({
       success: true,
       data: eventAttendances,
     })
   } catch (error) {
-    next(error);
+    next(error)
   }
 }
 
-module.exports = { getEvents, getEvent, createEvent, editEvent, deleteEvent, joinEvent, getEventAttendancesByUser }
+module.exports = {
+  getEvents,
+  getEvent,
+  createEvent,
+  editEvent,
+  deleteEvent,
+  joinEvent,
+  getEventAttendancesByUser,
+}

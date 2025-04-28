@@ -130,8 +130,21 @@ const editEvent = async (req, res, next) => {
 // @route   DELETE /api/v1/events/:event_id
 // @access  Private
 const deleteEvent = async (req, res, next) => {
+  const { event_id } = req.params
   try {
-    // TODO: ...
+    const event = await Event.findById(event_id)
+
+    if(!event){
+      throw new Error('Not found')
+    }
+
+    await event.deleteOne()
+
+    return res.status(200).json({
+      success: true,
+      data: {},
+    })
+   
   } catch (error) {
     next(error)
   }

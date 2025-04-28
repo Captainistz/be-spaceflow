@@ -15,12 +15,12 @@ const router = express.Router({ mergeParams: true })
 
 router.get('/', getEvents)
 router.post('/', createEvent)
-router.get('/join', protect, getEventAttendancesByUser)
+router.get('/attendance', protect, getEventAttendancesByUser)
 
 router.get('/:event_id', getEvent)
 router.put('/:event_id', editEvent)
-// router.delete("/:event_id", deleteEvent);
+router.delete("/:event_id", deleteEvent);
 
-router.post('/:event_id/join', protect, joinEvent)
+router.post('/attendance/:event_id', protect, joinEvent)
 
 module.exports = router

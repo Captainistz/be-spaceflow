@@ -151,7 +151,7 @@ const deleteEvent = async (req, res, next) => {
 }
 
 // @desc    join an ongoing event
-// @route   POST /api/v1/events/:event_id/join
+// @route   POST /api/v1/events/attendance/:event_id
 // @access  Private
 const joinEvent = async (req,res,next) => {
   const { event_id } = req.params;
@@ -199,12 +199,18 @@ const joinEvent = async (req,res,next) => {
   }
 }
 
-// @desc    get event attendances of this user with event detail populated
-// @route   GET /api/v1/events/eventAttendance
+// @desc    get event attendances of this user with space and event detail populated
+// @route   GET /api/v1/events/attendance
 // @access  Private
 const getEventAttendancesByUser = async (req,res,next) => {
   try {
-    const eventAttendances = await EventAttendance.find({user:req.user.id}).populate('event');
+    const populateObject = {
+      path : 'event',
+      populate: {
+        path : 'space',
+      }
+    }
+    const eventAttendances = await EventAttendance.find({user:req.user.id}).populate(populateObject);
     res.status(200).json({
       success: true,
       data: eventAttendances,

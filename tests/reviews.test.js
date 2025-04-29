@@ -1,234 +1,97 @@
-const { addReviews, upvoteReview } = require('../src/reviews')
+const request = require('supertest')
 const Review = require('../models/Review')
+const { connectDB, disconnectDB } = require('./memory-server')
+const app = require('../app')
+const Space = require('../models/Space')
+const User = require('../models/User')
+const dotenv = require('dotenv').config({ path: './config/config.env' })
 
-jest.mock('../models/Review')
+let space, user, userToken
 
 describe('Review', () => {
-    describe('Create Review', () => {
-        it('should create a new review', async () => {
-            const req = {
-                params: { space_id: 'space1' },
-                body: { rating: 4, comment: 'Great space!' },
-                user: { _id: 'user1' },
-            }
+  beforeAll(async () => {
+    await connectDB()
+    space = await Space.insertOne({
+      name: 'TEST SPACE',
+      address: 'TEST ADDR',
+      district: 'TEST DISTRICT',
+      province: 'TEST',
+      postalcode: '10110',
+      tel: '02-111-1111',
+      opentime: '0900',
+      closetime: '2100',
+      rooms: [
+        {
+          roomNumber: 'R101',
+          capacity: 4,
+          facilities: ['WiFi', 'Whiteboard'],
+          price: 450,
+        },
+        {
+          roomNumber: 'R102',
+          capacity: 8,
+          facilities: ['WiFi', 'Projector'],
+          price: 200,
+        },
+      ],
+    })
+    user = await User.insertOne({
+      name: 'TEST USER',
+      email: 'user@test.com',
+      password: '12345678',
+      phone: '0000000000',
+    })
+    userToken = user.getSignedJwtToken()
+  })
 
-            const res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            }
+  afterAll(async () => {
+    await disconnectDB()
+  })
 
-            const next = jest.fn()
+  beforeEach(async () => {
+    await Review.deleteMany({})
+  })
 
-            Review.findOne.mockResolvedValue(null)
-            Review.create.mockResolvedValue({
-                _id: 'review1',
-                ...req.body,
-            })
-
-            await addReviews(req, res, next)
-
-            expect(Review.findOne).toHaveBeenCalledWith({
-                spaceId: 'space1',
-                userId: 'user1',
-            })
-
-            expect(Review.create).toHaveBeenCalledWith({
-                spaceId: 'space1',
-                userId: 'user1',
-                rating: 4,
-                comment: 'Great space!',
-            })
-
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                data: { 
-                    _id: 'review1',
-                    comment: 'Great space!',
-                    rating: 4,
-                },
-            })
+  describe('Create Review', () => {
+    it('should create a new review', async () => {
+      const res = await request(app)
+        .post(`/api/v1/spaces/${space._id.toString()}/reviews`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          comment: 'THIS IS A GOOD ONE',
+          rating: 4,
         })
+        .expect(200)
 
-        it('should handle duplicate reviews error', async () => {
-            const req = {
-                params: { space_id: 'space1' },
-                body: { rating: 4, comment: 'Great space!' },
-                user: { _id: 'user1' },
-            }
+      const data = res.body.data
 
-            const res = {}
-            const next = jest.fn()
-
-            Review.findOne.mockResolvedValue({ _id: 'review1' })
-
-            await addReviews(req, res, next)
-
-            expect(next).toHaveBeenCalledWith(expect.any(Error))
-            expect(next.mock.calls[0][0].message).toBe(
-                'User has already been review to this space',
-            )
-        })
+      expect(res.body.success).toBe(true)
+      expect(data.userId).toBe(user._id.toString())
+      expect(data.spaceId).toBe(space._id.toString())
+      expect(data.comment).toBe('THIS IS A GOOD ONE')
+      expect(data.rating).toBe(4)
     })
 
-    describe('Upvote Review', () => {
-        it('should upvote a review', async () => {
-            const mockReview = {
-                _id: 'review1',
-                upVote: [],
-                downVote: [],
-            }
-
-            const req = {
-                params: { review_id: 'review1' },
-                user: { _id: 'user1' },
-            }
-
-            const res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            }
-
-            const next = jest.fn()
-
-            Review.findById.mockResolvedValue(mockReview)
-            Review.findByIdAndUpdate.mockResolvedValue(mockReview)
-
-            await upvoteReview(req, res, next)
-
-            expect(Review.findById).toHaveBeenCalledWith(req.params.review_id)
-            expect(Review.findByIdAndUpdate).toHaveBeenCalledWith(
-                req.params.review_id,
-                {
-                    upVote: ['user1'],
-                    downVote: [],
-                },
-                {
-                    new: true,
-                    runValidators: true,
-                },
-            )
-
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                data: {},
-            })
+    it('should handle duplicate reviews error', async () => {
+      await request(app)
+        .post(`/api/v1/spaces/${space._id.toString()}/reviews`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          comment: 'FIRST REVIEW',
+          rating: 3,
         })
+        .expect(200)
 
-        it('should handle review not found error', async () => {
-            const req = {
-                params: { review_id: 'review1' },
-                user: { _id: 'user1' },
-            }
-
-            const res = {}
-            const next = jest.fn()
-
-            Review.findById.mockResolvedValue(null)
-
-            await upvoteReview(req, res, next)
-
-            expect(next).toHaveBeenCalledWith(expect.any(Error))
-            expect(next.mock.calls[0][0].message).toBe(
-                'Review not found with id of review1',
-            )
-            expect(next.mock.calls[0][0].statusCode).toBe(404)
+      const res = await request(app)
+        .post(`/api/v1/spaces/${space._id.toString()}/reviews`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          comment: 'THIS IS A REALLY GOOD ONE',
+          rating: 4,
         })
+        .expect(500)
 
-        it('should remove upvote if user already upvoted', async () => {
-            const mockReview = {
-                _id: 'review1',
-                upVote: ['user1'],
-                downVote: [],
-            }
-
-            const req = {
-                params: { review_id: 'review1' },
-                user: { _id: 'user1' },
-            }
-
-            const res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            }
-
-            const next = jest.fn()
-
-            Review.findById.mockResolvedValue(mockReview)
-            Review.findByIdAndUpdate.mockResolvedValue({
-                _id: 'review1',
-                upVote: [],
-                downVote: [],
-            })
-
-            await upvoteReview(req, res, next)
-
-            expect(Review.findById).toHaveBeenCalledWith('review1')
-            expect(Review.findByIdAndUpdate).toHaveBeenCalledWith(
-                'review1',
-                {
-                    upVote: [],
-                    downVote: [],
-                },
-                {
-                    new: true,
-                    runValidators: true,
-                }
-            )
-
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                data: {},
-            })
-        })
-
-        it('should remove downvote if user already downvoted', async () => {
-            const mockReview = {
-                _id: 'review1',
-                upVote: [],
-                downVote: ['user1'],
-            }
-
-            const req = {
-                params: { review_id: 'review1' },
-                user: { _id: 'user1' },
-            }
-
-            const res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            }
-
-            const next = jest.fn()
-
-            Review.findById.mockResolvedValue(mockReview)
-            Review.findByIdAndUpdate.mockResolvedValue({
-                _id: 'review1',
-                upVote: [],
-                downVote: [],
-            })
-
-            await upvoteReview(req, res, next)
-
-            expect(Review.findById).toHaveBeenCalledWith('review1')
-            expect(Review.findByIdAndUpdate).toHaveBeenCalledWith(
-                'review1',
-                {
-                    upVote: ['user1'],
-                    downVote: [],
-                },
-                {
-                    new: true,
-                    runValidators: true,
-                }
-            )
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                data: {},
-            })
-        })
+      expect(res.body.success).toBe(false)
     })
+  })
 })

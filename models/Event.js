@@ -21,6 +21,7 @@ const EventSchema = new mongoose.Schema({
   capacity: {
     type: Number,
     required: true,
+    min: 1,
   },
   status: {
     type: String,

@@ -206,12 +206,14 @@ const joinEvent = async (req, res, next) => {
 const getEventAttendancesByUser = async (req, res, next) => {
   try {
     const populateObject = {
-      path : 'event',
+      path: 'event',
       populate: {
-        path : 'space',
-      }
+        path: 'space',
+      },
     }
-    const eventAttendances = await EventAttendance.find({user:req.user.id}).populate(populateObject);
+    const eventAttendances = await EventAttendance.find({
+      user: req.user.id,
+    }).populate(populateObject)
     res.status(200).json({
       success: true,
       data: eventAttendances,

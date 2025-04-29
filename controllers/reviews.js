@@ -177,7 +177,7 @@ async function upvoteReview(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      data: {updatedReview},
+      data: { updatedReview },
     })
   } catch (e) {
     if (e.name == 'CastError' || e.message == 'Not found') {

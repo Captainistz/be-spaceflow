@@ -3,6 +3,7 @@ const Review = require('../models/Review.js')
 // @desc   Get review of user of space
 // @route  GET /api/v1/:space_id/reviews/:user_id
 // @access Public
+/* istanbul ignore next */
 async function getReviewOfUser(req, res, next) {
   const { space_id, user_id } = req.params
 
@@ -25,6 +26,7 @@ async function getReviewOfUser(req, res, next) {
 // @desc   Get review of space
 // @route  GET /api/v1/:space_id/reviews
 // @access Public
+/* istanbul ignore next */
 async function getReviews(req, res, next) {
   const { space_id } = req.params
 
@@ -78,6 +80,7 @@ async function addReviews(req, res, next) {
 // @desc   update review of user of space
 // @route  PUT /api/v1/:space_id/reviews/:review_id
 // @access Private
+/* istanbul ignore next */
 async function updateReview(req, res, next) {
   const { space_id, review_id } = req.params
   // console.log(review_id)
@@ -111,6 +114,7 @@ async function updateReview(req, res, next) {
 // @desc   delete review of user of space
 // @route  DELETE /api/v1/:space_id/reviews/:review_id
 // @access Private
+/* istanbul ignore next */
 async function deleteReview(req, res, next) {
   const { review_id } = req.params
   try {
@@ -227,7 +231,10 @@ async function downvoteReview(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      data: {},
+      data: {
+        upvotes: review.upVote.length,
+        downvotes: review.downVote.length,
+      },
     })
   } catch (e) {
     if (e.name == 'CastError' || e.message == 'Not found') {

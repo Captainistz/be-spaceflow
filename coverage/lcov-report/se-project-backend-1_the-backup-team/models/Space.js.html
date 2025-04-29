@@ -1,68 +1,68 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>
-      Code coverage report for
-      se-project-backend-1_the-backup-team/models/Space.js
-    </title>
+
+<head>
+    <title>Code coverage report for se-project-backend-1_the-backup-team/models/Space.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type="text/css">
-      .coverage-summary .sorter {
-        background-image: url(../../sort-arrow-sprite.png);
-      }
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
     </style>
-  </head>
-
-  <body>
-    <div class="wrapper">
-      <div class="pad1">
-        <h1>
-          <a href="../../index.html">All files</a> /
-          <a href="index.html">se-project-backend-1_the-backup-team/models</a>
-          Space.js
-        </h1>
-        <div class="clearfix">
-          <div class="fl pad1y space-right2">
-            <span class="strong">35% </span>
-            <span class="quiet">Statements</span>
-            <span class="fraction">14/40</span>
-          </div>
-
-          <div class="fl pad1y space-right2">
-            <span class="strong">0% </span>
-            <span class="quiet">Branches</span>
-            <span class="fraction">0/10</span>
-          </div>
-
-          <div class="fl pad1y space-right2">
-            <span class="strong">28.57% </span>
-            <span class="quiet">Functions</span>
-            <span class="fraction">2/7</span>
-          </div>
-
-          <div class="fl pad1y space-right2">
-            <span class="strong">39.39% </span>
-            <span class="quiet">Lines</span>
-            <span class="fraction">13/33</span>
-          </div>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">se-project-backend-1_the-backup-team/models</a> Space.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">32.5% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>13/40</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/10</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">14.28% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>1/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">39.39% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>13/33</span>
+            </div>
+        
+            
         </div>
         <p class="quiet">
-          Press <em>n</em> or <em>j</em> to go to the next uncovered block,
-          <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
         <template id="filterTemplate">
-          <div class="quiet">
-            Filter:
-            <input type="search" id="fileSearch" />
-          </div>
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
         </template>
-      </div>
-      <div class="status-line low"></div>
-      <pre><table class="coverage">
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
 <a name='L3'></a><a href='#L3'>3</a>
@@ -275,7 +275,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -405,7 +405,7 @@ const SpaceSchema = new mongoose.Schema({
 SpaceSchema.index({ 'rooms.roomNumber': 1 }, { unique: true })
 &nbsp;
 SpaceSchema.path('rooms').validate(function (rooms) {
-  const roomNumbers = rooms.map((room) =&gt; room.roomNumber)
+  const roomNumbers = rooms.map(<span class="fstat-no" title="function not covered" >(r</span>oom) =&gt; <span class="cstat-no" title="statement not covered" >room.roomNumber)</span>
   const uniqueRoomNumbers = new Set(roomNumbers)
   return roomNumbers.length === uniqueRoomNumbers.size
 }, 'Room numbers must be unique within a space')
@@ -455,27 +455,21 @@ SpaceSchema.virtual('reservations', {
 module.exports = mongoose.model('Space', SpaceSchema)
 &nbsp;</pre></td></tr></table></pre>
 
-      <div class="push"></div>
-      <!-- for sticky footer -->
-    </div>
-    <!-- /wrapper -->
-    <div class="footer quiet pad2 space-top1 center small">
-      Code coverage generated by
-      <a
-        href="https://istanbul.js.org/"
-        target="_blank"
-        rel="noopener noreferrer"
-        >istanbul</a
-      >
-      at 2025-04-29T12:26:23.892Z
-    </div>
-    <script src="../../prettify.js"></script>
-    <script>
-      window.onload = function () {
-        prettyPrint()
-      }
-    </script>
-    <script src="../../sorter.js"></script>
-    <script src="../../block-navigation.js"></script>
-  </body>
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2025-04-29T14:49:34.618Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
 </html>
+    

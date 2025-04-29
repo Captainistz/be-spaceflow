@@ -98,8 +98,6 @@ describe('Review', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .expect(200)
 
-      console.log(res.body)
-
       expect(res.body.success).toBe(true)
       expect(res.body.data.upvotes).toBe(1)
     })
@@ -147,6 +145,88 @@ describe('Review', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .expect(404)
 
+      expect(res.body.success).toBe(false)
+      expect(res.body.message).toBe(`Review not found with id of ${fakeId}`)
+    })
+  })
+  describe('GET /api/v1/:space_id/reviews/:review_id/downvote (downvoteReview)', () => {
+    it('should up vote a review', async () => {
+      const review = await Review.create({
+        userId: user._id,
+        spaceId: space._id,
+        comment: 'Test review',
+        rating: 3,
+      })
+
+      const res = await request(app)
+        .get(
+          `/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/upvote`,
+        )
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200)
+
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.upvotes).toBe(1)
+    })
+
+    it('should down vote a review', async () => {
+      const review = await Review.create({
+        userId: user._id,
+        spaceId: space._id,
+        comment: 'Test review',
+        rating: 3,
+      })
+
+      const res = await request(app)
+        .get(`/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/downvote`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200)
+
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.downvotes).toBe(1)
+    })
+    it('should remove downvote if already downvoted', async () => {
+      const review = await Review.create({
+        userId: user._id,
+        spaceId: space._id,
+        comment: 'Test review',
+        rating: 3,
+        downVote: [user._id],
+      })
+
+      const res = await request(app)
+        .get(`/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/downvote`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200)
+
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.downvotes).toBe(0)
+    })
+    it('should remove upvote when downvoting', async () => {
+      const review = await Review.create({
+        userId: user._id,
+        spaceId: space._id,
+        comment: 'Test review',
+        rating: 3,
+        upVote: [user._id],
+      })
+
+      const res = await request(app)
+        .get(`/api/v1/spaces/${space._id}/reviews/${review._id}/downvote`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200)
+
+      expect(res.body.success).toBe(true)
+      expect(res.body.data.upvotes).toBe(0)
+      expect(res.body.data.downvotes).toBe(1)
+    })
+    it('should return 404 if review not found', async () => {
+      const fakeId = '65e6a84e25cb8f0bca0fa999'
+
+      const res = await request(app)
+        .get(`/api/v1/spaces/${space._id}/reviews/${fakeId}/downvote`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(404)
       expect(res.body.success).toBe(false)
       expect(res.body.message).toBe(`Review not found with id of ${fakeId}`)
     })

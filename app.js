@@ -13,7 +13,7 @@ const globalErrorHandler = require('./middleware/errorHandler')
 const initCronjobs = require('./utils/cron')
 
 const swaggerJSDoc = require('swagger-jsdoc')
-const swaggerUI = require("swagger-ui-express");
+const swaggerUI = require('swagger-ui-express')
 
 // Load environment
 var configPath = './config/config.env'
@@ -30,37 +30,37 @@ const PORT = process.env.PORT || 5000
 // Swagger
 const swggerOption = {
   swaggerDefinition: {
-      openapi: "3.0.0",
-      info: {
-          title: "Library API",
-          version: "1.0.0",
-          description: "CWS Express API"
+    openapi: '3.0.0',
+    info: {
+      title: 'Library API',
+      version: '1.0.0',
+      description: 'CWS Express API',
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}/api/v1`,
       },
-      servers: [
-          {
-              url: `http://localhost:${PORT}/api/v1`
-          }
-      ],
-      components: {
-        securitySchemes: {
-          bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT', // Optional, but recommended
-          },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT', // Optional, but recommended
         },
       },
-      security: [
-        {
-          bearerAuth: [], // Apply globally to all routes
-        },
-      ],
+    },
+    security: [
+      {
+        bearerAuth: [], // Apply globally to all routes
+      },
+    ],
   },
-  apis: ["./routes/*.js"]
-};
+  apis: ['./routes/*.js'],
+}
 
-const swaggerDocs = swaggerJSDoc(swggerOption);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+const swaggerDocs = swaggerJSDoc(swggerOption)
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs))
 
 // Setup express
 app.use(cors())

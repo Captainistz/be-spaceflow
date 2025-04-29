@@ -69,43 +69,43 @@ const router = express.Router({ mergeParams: true })
  */
 
 /**
-* @swagger
-* /spaces/{space_id}/reviews:
-*   post:
-*     summary: Add a new Review
-*     tags: [Reviews]
-*     security:
-*       - bearerAuth: [] # Requires Bearer Token
-*     parameters:
-*       - in: path
-*         name: space_id
-*         schema:
-*           type: string
-*         required: true
-*         description: The space id
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             type: object
-*             properties:
-*               rating:
-*                 type: number
-*                 example: 4
-*               comment:
-*                 type: string
-*                 example: "Great space!"
-*     responses:
-*       200:
-*         description: The list of reviews
-*         content:
-*           application/json:
-*             schema:
-*               type: array
-*
-* 
-*/
+ * @swagger
+ * /spaces/{space_id}/reviews:
+ *   post:
+ *     summary: Add a new Review
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: [] # Requires Bearer Token
+ *     parameters:
+ *       - in: path
+ *         name: space_id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The space id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rating:
+ *                 type: number
+ *                 example: 4
+ *               comment:
+ *                 type: string
+ *                 example: "Great space!"
+ *     responses:
+ *       200:
+ *         description: The list of reviews
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *
+ *
+ */
 
 /**
  * @swagger
@@ -272,11 +272,6 @@ const router = express.Router({ mergeParams: true })
  *               data:
  *                 message: "Downvoted successfully"
  */
-
-
-
-
-
 
 router.get('/', controller.getReviews)
 router.post('/', protect, authorize('user', 'admin'), controller.addReviews)

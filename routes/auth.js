@@ -9,32 +9,41 @@ const router = express.Router()
  * @swagger
  * /auth/register:
  *   post:
- *    summary: Register a new user
- *    tags: [Auth]
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *         schema:
- *           type: object
- *         properties:
- *           name:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
- *  
- *               type: string
+ *                 type: string
  *           example:
- *              name: John Doe
- *              email:
- *                type: string
- *               password:
- *                type: string
- *              example:
- *                name: John Doe
- *               email:
- * */
+ *             name: "John Doe"
+ *             email: "johndoe@example.com"
+ *             password: "securepassword"
+ *     responses:
+ *       201:
+ *         description: User successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *             example:
+ *               success: true
+ *               data: {}
+ */
 
 /**
  * @swagger

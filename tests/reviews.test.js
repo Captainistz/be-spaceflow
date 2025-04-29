@@ -177,7 +177,9 @@ describe('Review', () => {
       })
 
       const res = await request(app)
-        .get(`/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/downvote`)
+        .get(
+          `/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/downvote`,
+        )
         .set('Authorization', `Bearer ${userToken}`)
         .expect(200)
 
@@ -194,7 +196,9 @@ describe('Review', () => {
       })
 
       const res = await request(app)
-        .get(`/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/downvote`)
+        .get(
+          `/api/v1/spaces/${space._id.toString()}/reviews/${review._id}/downvote`,
+        )
         .set('Authorization', `Bearer ${userToken}`)
         .expect(200)
 

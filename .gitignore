@@ -37,4 +37,4 @@ logs
 config/config.*
 !config/*.example
 
-converage/
+coverage/

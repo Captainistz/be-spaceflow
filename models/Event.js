@@ -4,6 +4,8 @@ const EventSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    minlength: 1,
+    maxlength: 50,
   },
   space: {
     type: mongoose.Schema.ObjectId,
@@ -13,6 +15,7 @@ const EventSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
+    maxlength: 200,
   },
   host: {
     type: String,

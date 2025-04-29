@@ -25,6 +25,8 @@ dotenv.config({ path: configPath })
 
 const app = express()
 
+const PORT = process.env.PORT || 5000
+
 // Swagger
 const swggerOption = {
   swaggerDefinition: {
@@ -36,7 +38,7 @@ const swggerOption = {
       },
       servers: [
           {
-              url: 'http://localhost:5000/api/v1'
+              url: `http://localhost:${PORT}/api/v1`
           }
       ],
       components: {
@@ -103,7 +105,6 @@ if (process.env.NODE_ENV !== 'test') {
     await initCronjobs()
   })
 
-  const PORT = process.env.PORT || 5000
   app.listen(PORT, () => {
     console.log(`  🚀 Server is running at http://127.0.0.1:${PORT}`)
     console.log(`  📦 Using ${process.env.NODE_ENV} environment`)

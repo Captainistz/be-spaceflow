@@ -7,6 +7,13 @@ const router = express.Router()
 
 /**
  * @swagger
+ * tags:
+ *   - name: "Auth"
+ *     description: API operations related to authentication
+ */
+
+/**
+ * @swagger
  * /auth/register:
  *   post:
  *    summary: Register a new user
@@ -17,23 +24,17 @@ const router = express.Router()
  *        application/json:
  *         schema:
  *           type: object
- *         properties:
+ *           properties:
  *           name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *  
- *               type: string
+ *             type: string
+ *           email:
+ *             type: string
+ *           password:
+ *             type: string
  *           example:
- *              name: John Doe
- *              email:
- *                type: string
- *               password:
- *                type: string
- *              example:
- *                name: John Doe
- *               email:
+ *              name: "John Doe"
+ *              email: "sample@gmail.com"
+ *              password: "12345678"
  * */
 
 /**

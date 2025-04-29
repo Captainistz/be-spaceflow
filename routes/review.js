@@ -5,6 +5,12 @@ const controller = require('../controllers/reviews.js')
 
 const router = express.Router({ mergeParams: true })
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Reviews
+ *     description: API operations related to reviews
+ */
 
 /**
  * @swagger

@@ -325,12 +325,12 @@ const router = express.Router({ mergeParams: true })
  */
 
 router.get('/', getEvents)
-router.post('/', createEvent)
+router.post('/', protect, authorize('admin'), createEvent)
 router.get('/attendance', protect, getEventAttendancesByUser)
 
 router.get('/:event_id', getEvent)
-router.put('/:event_id', editEvent)
-router.delete('/:event_id', deleteEvent)
+router.put('/:event_id', protect, authorize('admin'), editEvent)
+router.delete('/:event_id', protect, authorize('admin'), deleteEvent)
 
 router.post('/attendance/:event_id', protect, joinEvent)
 router.get('/attendance/:event_id', getEventAttendancesByEvent)

@@ -4,7 +4,8 @@
   "description": "Backend REST API for Co-working space reservation.",
   "main": "app.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --detectOpenHandles --forceExit",
+    "test": "jest",
+    "test-coverage": "jest --watchAll --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "dev": "nodemon app.js",
     "start": "node app.js",

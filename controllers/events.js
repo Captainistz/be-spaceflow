@@ -134,7 +134,7 @@ const deleteEvent = async (req, res, next) => {
   try {
     const event = await Event.findById(event_id)
 
-    if(!event){
+    if (!event) {
       throw new Error('Not found')
     }
 
@@ -144,7 +144,6 @@ const deleteEvent = async (req, res, next) => {
       success: true,
       data: {},
     })
-   
   } catch (error) {
     next(error)
   }
@@ -190,7 +189,7 @@ const joinEvent = async (req, res, next) => {
     req.body.event = event_id
 
     const reservation = await EventAttendance.create(req.body)
-    await Event.updateOne({_id:event_id}, {$inc:{attendee:1}})
+    await Event.updateOne({ _id: event_id }, { $inc: { attendee: 1 } })
 
     res.status(200).json({
       success: true,

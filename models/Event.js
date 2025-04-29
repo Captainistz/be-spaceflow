@@ -42,7 +42,7 @@ const EventSchema = new mongoose.Schema({
   attendee: {
     type: Number,
     default: 0,
-  }
+  },
 })
 
 EventSchema.pre('validate', function (next) {

@@ -142,7 +142,7 @@ async function deleteReview(req, res, next) {
 }
 
 // @desc   User upvote review
-// @route  DELETE /api/v1/:space_id/reviews/:review_id
+// @route  GET /api/v1/:space_id/reviews/:review_id
 // @access Private
 async function upvoteReview(req, res, next) {
   const { review_id } = req.params
@@ -163,7 +163,7 @@ async function upvoteReview(req, res, next) {
       (userId) => !userId.equals(req.user._id),
     )
 
-    await Review.findByIdAndUpdate(
+    const updatedReview = await Review.findByIdAndUpdate(
       review_id,
       {
         upVote: review.upVote,
@@ -177,7 +177,7 @@ async function upvoteReview(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      data: {},
+      data: {updatedReview},
     })
   } catch (e) {
     if (e.name == 'CastError' || e.message == 'Not found') {
@@ -189,7 +189,7 @@ async function upvoteReview(req, res, next) {
 }
 
 // @desc   User downvote review
-// @route  DELETE /api/v1/:space_id/reviews/:review_id
+// @route  GET /api/v1/:space_id/reviews/:review_id
 // @access Private
 async function downvoteReview(req, res, next) {
   const { review_id } = req.params

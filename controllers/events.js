@@ -138,6 +138,7 @@ const deleteEvent = async (req, res, next) => {
       throw new Error('Not found')
     }
 
+    await EventAttendance.deleteMany({event : event_id})
     await event.deleteOne()
 
     return res.status(200).json({
@@ -223,12 +224,29 @@ const getEventAttendancesByUser = async (req, res, next) => {
   }
 }
 
-module.exports = {
-  getEvents,
-  getEvent,
-  createEvent,
-  editEvent,
-  deleteEvent,
-  joinEvent,
-  getEventAttendancesByUser,
+
+const getEventAttendancesByEvent = async (req,res,next) => {
+  try {
+
+    const populateObject = {
+      path : 'event',
+      populate: {
+        path : 'space',
+      }
+    }
+
+    console.log(req.params)
+
+    const attendances = await EventAttendance.find({event : req.params.event_id}).populate(populateObject);
+
+    res.status(200).json({
+      success: true,
+      data: attendances,
+    })
+
+  } catch (error) {
+    next(error);
+  }
 }
+
+module.exports = { getEvents, getEvent, createEvent, editEvent, deleteEvent, joinEvent, getEventAttendancesByUser,getEventAttendancesByEvent }

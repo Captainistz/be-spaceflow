@@ -12,17 +12,17 @@ const ReviewSchema = new mongoose.Schema({
   },
   userId: {
     type: Schema.Types.ObjectId,
-    require: [true, 'Please insert user ID'],
+    required: [true, 'Please insert user ID'],
     ref: 'User',
   },
   spaceId: {
     type: Schema.Types.ObjectId,
-    require: [true, 'Please insert space ID'],
+    required: [true, 'Please insert space ID'],
     ref: 'Space',
   },
   comment: {
     type: String,
-    require: [true, 'Please insert a comment'],
+    required: [true, 'Please insert a comment'],
     maxlength: [200, 'Comment cannot be longer than 200 character'],
   },
   rating: {

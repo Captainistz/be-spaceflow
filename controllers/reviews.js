@@ -163,7 +163,7 @@ async function upvoteReview(req, res, next) {
       (userId) => !userId.equals(req.user._id),
     )
 
-    const updatedReview = await Review.findByIdAndUpdate(
+    await Review.findByIdAndUpdate(
       review_id,
       {
         upVote: review.upVote,
@@ -177,7 +177,10 @@ async function upvoteReview(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      data: { updatedReview },
+      data: {
+        upvotes: review.upVote.length,
+        downvotes: review.downVote.length,
+      },
     })
   } catch (e) {
     if (e.name == 'CastError' || e.message == 'Not found') {

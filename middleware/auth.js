@@ -31,7 +31,7 @@ const authorize = (...roles) => {
       const error = new Error(
         `User role ${req.user.role} is not authorized to access this route`,
       )
-      error.statusCode = 403
+      error.statusCode = 401
       return next(error)
     }
     next()

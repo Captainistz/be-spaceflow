@@ -4,7 +4,6 @@ const { connectDB, disconnectDB } = require('./memory-server')
 const app = require('../app')
 const Space = require('../models/Space')
 const User = require('../models/User')
-const dotenv = require('dotenv').config({ path: './config/config.env' })
 
 let space, user, userToken
 

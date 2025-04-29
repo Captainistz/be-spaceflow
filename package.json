@@ -6,7 +6,6 @@
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --watchAll --coverage",
-    "test:review": "jest tests/reviews.test.js --collectCoverage --collectCoverageFrom='src/reviews.js'",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "dev": "nodemon app.js",
     "start": "node app.js",

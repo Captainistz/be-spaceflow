@@ -74,8 +74,6 @@ const router = express.Router()
  *               data: {}
  */
 
-
-
 router.get('/me', protect, me)
 router.get('/logout', logout)
 

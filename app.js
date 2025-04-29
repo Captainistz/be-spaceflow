@@ -12,6 +12,9 @@ const connectDB = require('./utils/db')
 const globalErrorHandler = require('./middleware/errorHandler')
 const initCronjobs = require('./utils/cron')
 
+const swaggerJSDoc = require('swagger-jsdoc')
+const swaggerUI = require("swagger-ui-express");
+
 // Load environment
 var configPath = './config/config.env'
 if (process.env.NODE_ENV === 'test') {
@@ -21,6 +24,41 @@ if (process.env.NODE_ENV === 'test') {
 dotenv.config({ path: configPath })
 
 const app = express()
+
+// Swagger
+const swggerOption = {
+  swaggerDefinition: {
+      openapi: "3.0.0",
+      info: {
+          title: "Library API",
+          version: "1.0.0",
+          description: "CWS Express API"
+      },
+      servers: [
+          {
+              url: 'http://localhost:5000/api/v1'
+          }
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT', // Optional, but recommended
+          },
+        },
+      },
+      security: [
+        {
+          bearerAuth: [], // Apply globally to all routes
+        },
+      ],
+  },
+  apis: ["./routes/*.js"]
+};
+
+const swaggerDocs = swaggerJSDoc(swggerOption);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Setup express
 app.use(cors())

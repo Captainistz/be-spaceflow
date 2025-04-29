@@ -14,6 +14,24 @@ const {
 
 const router = express.Router({ mergeParams: true })
 
+
+/***
+ * @swagger
+ * /events:
+ *   get:
+ *     summary: Returns the list of all events
+ *     tags: [Events]
+ *     responses:
+ *       200:
+ *         description: The list of events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               
+ */
+
+
 router.get('/', getEvents)
 router.post('/', createEvent)
 router.get('/attendance', protect, getEventAttendancesByUser)

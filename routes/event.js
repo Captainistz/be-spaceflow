@@ -8,7 +8,8 @@ const {
   editEvent,
   deleteEvent,
   joinEvent,
-  getEventAttendancesByUser
+  getEventAttendancesByUser,
+  getEventAttendancesByEvent,
 } = require('../controllers/events.js')
 
 const router = express.Router({ mergeParams: true })
@@ -22,5 +23,6 @@ router.put('/:event_id', editEvent)
 router.delete("/:event_id", deleteEvent);
 
 router.post('/attendance/:event_id', protect, joinEvent)
+router.get('/attendance/:event_id',getEventAttendancesByEvent)
 
 module.exports = router
